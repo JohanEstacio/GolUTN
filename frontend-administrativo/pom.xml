@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>ec.edu.utn.golutn</groupId>
+  <artifactId>golutn-admin</artifactId>
+  <version>1.0.0</version>
+  <packaging>war</packaging>
+  <name>GolUTN - Frontend Administrativo</name>
+  <description>Frontend Administrativo (JSF) para GolUTN Mundial 2026 - Panel de control</description>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jakarta.faces.version>4.0.7</jakarta.faces.version>
+    <primefaces.version>13.0.6</primefaces.version>
+  </properties>
+
+  <dependencies>
+    <!-- Jakarta EE 10 API (WildFly la provee en runtime) -->
+    <dependency>
+      <groupId>jakarta.platform</groupId>
+      <artifactId>jakarta.jakartaee-api</artifactId>
+      <version>10.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Mojarra (implementacion de Jakarta Faces) -->
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>jakarta.faces</artifactId>
+      <version>${jakarta.faces.version}</version>
+    </dependency>
+
+    <!-- PrimeFaces: componentes visuales para el panel administrativo -->
+    <dependency>
+      <groupId>org.primefaces</groupId>
+      <artifactId>primefaces</artifactId>
+      <version>${primefaces.version}</version>
+      <classifier>jakarta</classifier>
+    </dependency>
+
+    <!-- Cliente REST para consumir el Servicio de Estadisticas y UTNGolCoin -->
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>3.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
+      <version>3.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+      <version>3.1.5</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>golutn-admin</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.4.0</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

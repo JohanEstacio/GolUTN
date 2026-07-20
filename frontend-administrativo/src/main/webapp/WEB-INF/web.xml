@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <display-name>GolUTN - Frontend Administrativo</display-name>
+
+    <!-- Bienvenida: redirige al login -->
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>
+
+    <!-- Mapeo del FacesServlet -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+
+    <!-- Parametros de configuracion de Faces -->
+    <context-param>
+        <param-name>jakarta.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+    <context-param>
+        <param-name>jakarta.faces.DEFAULT_SUFFIX</param-name>
+        <param-value>.xhtml</param-value>
+    </context-param>
+    <context-param>
+        <param-name>jakarta.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+    </context-param>
+
+    <!-- URL base del Servicio de Estadisticas (backend). Cambiar cuando este desplegado. -->
+    <context-param>
+        <param-name>ESTADISTICAS_API_URL</param-name>
+        <param-value>http://localhost:8080/estadisticas-api/api</param-value>
+    </context-param>
+
+    <!-- URL base del Servicio UTNGolCoin (para reportes de monedas en circulacion) -->
+    <context-param>
+        <param-name>UTNGOLCOIN_API_URL</param-name>
+        <param-value>http://localhost:8081/utngolcoin-api/api</param-value>
+    </context-param>
+
+    <!-- Si el backend no responde, la app sigue funcionando con datos de ejemplo (mock) -->
+    <context-param>
+        <param-name>USAR_MOCK_SI_FALLA_API</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <!-- Restringe el acceso al panel: solo usuarios autenticados como admin -->
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>ec.edu.utn.golutn.admin.util.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/panel/*</url-pattern>
+    </filter-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+</web-app>

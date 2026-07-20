@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>GolUTN Admin - #{titulo}</title>
+        <h:outputStylesheet library="css" name="estilos.css" />
+    </h:head>
+
+    <h:body>
+        <div class="panel-topbar">
+            <div class="marca">
+                GolUTN <span class="badge-admin">ADMIN</span>
+            </div>
+            <h:form>
+                <span style="margin-right:1rem;">
+                    #{loginBean.usuarioActual.nombre}
+                </span>
+                <h:commandLink value="Cerrar sesion" action="#{loginBean.cerrarSesion}" />
+            </h:form>
+        </div>
+
+        <div class="panel-body">
+            <div class="panel-menu">
+                <h:link outcome="/panel/dashboard" value="Inicio" />
+                <h:link outcome="/panel/partidos" value="Gestion de partidos" />
+                <h:link outcome="/panel/usuarios" value="Gestion de usuarios" />
+                <h:link outcome="/panel/reportes" value="Reportes y auditoria" />
+            </div>
+
+            <div class="panel-contenido">
+                <h:messages globalOnly="false" showDetail="true" showSummary="true" style="margin-bottom:1rem;" />
+                <ui:insert name="contenido">Contenido no definido</ui:insert>
+            </div>
+        </div>
+    </h:body>
+</ui:composition>

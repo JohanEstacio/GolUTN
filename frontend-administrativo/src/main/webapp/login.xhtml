@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>GolUTN Admin - Acceso</title>
+    <h:outputStylesheet library="css" name="estilos.css" />
+</h:head>
+
+<h:body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h1>GolUTN &#8226; Panel Administrativo</h1>
+            <p class="subtitulo">Mundial 2026 - acceso exclusivo para administradores</p>
+
+            <h:form id="formLogin">
+                <p:messages showDetail="true" closable="true" />
+
+                <p:inputText id="correo" value="#{loginBean.correo}"
+                             placeholder="Correo institucional" required="true"
+                             requiredMessage="Ingresa tu correo" />
+
+                <p:password id="password" value="#{loginBean.password}"
+                            placeholder="Contraseña" feedback="false"
+                            required="true" requiredMessage="Ingresa tu contraseña" />
+
+                <p:commandButton value="Ingresar" action="#{loginBean.iniciarSesion}"
+                                 ajax="false" />
+
+                <p style="font-size:0.75rem;color:#888;margin-top:1rem;">
+                    Demo mientras el backend no esta desplegado:<br/>
+                    admin@golutn.edu.ec / admin123
+                </p>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>

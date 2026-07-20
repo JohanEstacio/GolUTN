@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Gestion de partidos" />
+
+    <ui:define name="contenido">
+        <h2>Gestion de partidos</h2>
+        <p>Consulta el calendario y registra el resultado oficial de cada partido finalizado.</p>
+
+        <h:form id="formPartidos">
+            <p:dataTable id="tablaPartidos" var="p" value="#{partidosBean.partidos}"
+                         emptyMessage="No hay partidos cargados todavia."
+                         paginator="true" rows="10" styleClass="tabla-partidos">
+
+                <p:column headerText="Local">
+                    <h:outputText value="#{p.seleccionLocal}" />
+                </p:column>
+                <p:column headerText="Visitante">
+                    <h:outputText value="#{p.seleccionVisitante}" />
+                </p:column>
+                <p:column headerText="Sede">
+                    <h:outputText value="#{p.sede}" />
+                </p:column>
+                <p:column headerText="Fase">
+                    <h:outputText value="#{p.fase}" />
+                </p:column>
+                <p:column headerText="Fecha y hora">
+                    <h:outputText value="#{p.fechaHora}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" type="localDateTime" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Estado">
+                    <span class="estado-tag estado-#{p.estado.toString().toLowerCase()}">
+                        #{p.estado}
+                    </span>
+                </p:column>
+                <p:column headerText="Marcador">
+                    <h:outputText value="#{p.golesLocal} - #{p.golesVisitante}"
+                                  rendered="#{p.golesLocal != null}" />
+                    <h:outputText value="Sin jugar" rendered="#{p.golesLocal == null}" />
+                </p:column>
+                <p:column headerText="Accion">
+                    <p:commandButton value="Registrar resultado"
+                                     actionListener="#{partidosBean.prepararRegistroResultado(p)}"
+                                     update=":formPartidos:dialogResultado" oncomplete="PF('dlgResultado').show()" />
+                </p:column>
+            </p:dataTable>
+
+            <!-- Dialogo para registrar el resultado oficial (RF11, CP09, CP10) -->
+            <p:dialog id="dialogResultado" header="Registrar resultado oficial" widgetVar="dlgResultado" modal="true" width="380">
+                <h:panelGrid columns="2" cellpadding="6" rendered="#{partidosBean.partidoSeleccionado != null}">
+                    <h:outputText value="Partido:" />
+                    <h:outputText value="#{partidosBean.partidoSeleccionado.seleccionLocal} vs #{partidosBean.partidoSeleccionado.seleccionVisitante}" />
+
+                    <h:outputText value="Goles local:" />
+                    <p:inputNumber value="#{partidosBean.golesLocalIngresados}" decimalPlaces="0" minValue="0" />
+
+                    <h:outputText value="Goles visitante:" />
+                    <p:inputNumber value="#{partidosBean.golesVisitanteIngresados}" decimalPlaces="0" minValue="0" />
+                </h:panelGrid>
+
+                <div style="text-align:right;margin-top:1rem;">
+                    <p:commandButton value="Guardar resultado" action="#{partidosBean.guardarResultado}"
+                                     update=":formPartidos" oncomplete="PF('dlgResultado').hide()" />
+                </div>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

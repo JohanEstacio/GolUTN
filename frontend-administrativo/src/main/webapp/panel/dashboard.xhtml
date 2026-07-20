@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Inicio" />
+
+    <ui:define name="contenido">
+        <h2>Bienvenido, #{loginBean.usuarioActual.nombre}</h2>
+        <p>Panel de control del Mundial 2026. Desde aqui gestionas partidos, usuarios y reportes del torneo.</p>
+
+        <div class="tarjetas-resumen">
+            <div class="tarjeta">
+                <div class="valor">104</div>
+                <div class="etiqueta">Partidos en el calendario</div>
+            </div>
+            <div class="tarjeta">
+                <div class="valor">48</div>
+                <div class="etiqueta">Selecciones</div>
+            </div>
+            <div class="tarjeta">
+                <div class="valor">12</div>
+                <div class="etiqueta">Grupos</div>
+            </div>
+        </div>
+
+        <p:panel header="Accesos rapidos">
+            <h:link outcome="/panel/partidos" value="Ir a Gestion de partidos" style="display:block;margin-bottom:0.6rem;" />
+            <h:link outcome="/panel/usuarios" value="Ir a Gestion de usuarios" style="display:block;margin-bottom:0.6rem;" />
+            <h:link outcome="/panel/reportes" value="Ir a Reportes y auditoria" style="display:block;" />
+        </p:panel>
+    </ui:define>
+</ui:composition>
