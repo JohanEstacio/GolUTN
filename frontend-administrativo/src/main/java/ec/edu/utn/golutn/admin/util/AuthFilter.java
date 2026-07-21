@@ -1,20 +1,16 @@
 package ec.edu.utn.golutn.admin.util;
 
+import ec.edu.utn.golutn.admin.model.Usuario;
+
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
 /**
- * Filtro base para proteger /panel/*.
- *
- * NOTA PARA EL EQUIPO: por ahora deja pasar todas las peticiones porque el
- * mecanismo de autenticacion definitivo (sesion + rol validado contra el
- * Servicio de Estadisticas) todavia se esta afinando junto con el backend.
- * Cuando el login contra la API este 100% estable, aqui se debe:
- *   1. Leer el usuario autenticado desde la sesion HTTP.
- *   2. Si no existe o su rol no es ADMINISTRADOR, redirigir a /login.xhtml.
- * Dejamos el filtro ya registrado en web.xml para no olvidarlo.
+ * Protege /panel/* y permite el acceso solo a administradores activos.
  */
 public class AuthFilter implements Filter {
 
@@ -22,6 +18,26 @@ public class AuthFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse res = (HttpServletResponse) response;
+        HttpSession session = req.getSession(false);
+
+        Object usuarioEnSesion = session == null
+                ? null
+                : session.getAttribute("usuarioAutenticado");
+        Usuario usuario = usuarioEnSesion instanceof Usuario
+                ? (Usuario) usuarioEnSesion
+                : null;
+
+        if (usuario == null
+                || !usuario.isActivo()
+                || !"ADMINISTRADOR".equalsIgnoreCase(usuario.getRol())) {
+            res.sendRedirect(req.getContextPath() + "/login.xhtml");
+            return;
+        }
+
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.setHeader("Pragma", "no-cache");
+        res.setDateHeader("Expires", 0);
         chain.doFilter(request, response);
     }
 }

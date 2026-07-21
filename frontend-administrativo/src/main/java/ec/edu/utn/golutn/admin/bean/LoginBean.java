@@ -8,6 +8,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.Serializable;
 
@@ -27,7 +28,12 @@ public class LoginBean implements Serializable {
     private Usuario usuarioActual;
 
     public String iniciarSesion() {
-        Usuario u = apiClient.iniciarSesion(correo, password);
+        Usuario u;
+        try {
+            u = apiClient.iniciarSesion(correo, password);
+        } finally {
+            password = null;
+        }
 
         if (u == null) {
             // CP02: credenciales invalidas -> mensaje de error claro (RNF10)
@@ -35,6 +41,14 @@ public class LoginBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR,
                             "Credenciales incorrectas",
                             "El correo o la contraseña no son validos."));
+            return null;
+        }
+
+        if (!u.isActivo()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Acceso restringido",
+                            "El usuario se encuentra inactivo."));
             return null;
         }
 
@@ -47,6 +61,9 @@ public class LoginBean implements Serializable {
         }
 
         this.usuarioActual = u;
+        HttpSession session = (HttpSession) FacesContext.getCurrentInstance()
+                .getExternalContext().getSession(true);
+        session.setAttribute("usuarioAutenticado", u);
         return "/panel/dashboard.xhtml?faces-redirect=true";
     }
 
