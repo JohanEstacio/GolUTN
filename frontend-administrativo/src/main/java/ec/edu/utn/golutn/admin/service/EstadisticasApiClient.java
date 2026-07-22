@@ -45,7 +45,7 @@ public class EstadisticasApiClient {
 
     @PostConstruct
     public void init() {
-        this.client = ClientBuilder.newClient();
+        this.client = ClientBuilder.newClient().register(JacksonObjectMapperResolver.class);
         FacesContext fc = FacesContext.getCurrentInstance();
         if (fc != null) {
             this.baseUrl = fc.getExternalContext().getInitParameter("ESTADISTICAS_API_URL");

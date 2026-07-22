@@ -31,7 +31,7 @@ public class UtnGolCoinApiClient {
 
     @PostConstruct
     public void init() {
-        this.client = ClientBuilder.newClient();
+        this.client = ClientBuilder.newClient().register(JacksonObjectMapperResolver.class);
         FacesContext fc = FacesContext.getCurrentInstance();
         if (fc != null) {
             this.baseUrl = fc.getExternalContext().getInitParameter("UTNGOLCOIN_API_URL");
