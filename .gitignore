@@ -364,3 +364,4 @@ FodyWeavers.xsdtarget/
 *.class
 .vscode/
 /frontend-administrativo/target/
+CLAUDE.md
