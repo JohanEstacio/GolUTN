@@ -20,21 +20,21 @@
             <div class="tarjeta tarjeta-azul">
                 <span class="tarjeta-icono icono-partidos" aria-hidden="true"></span>
                 <div class="tarjeta-datos">
-                    <div class="valor">104</div>
+                    <div class="valor">#{dashboardBean.totalPartidos != null ? dashboardBean.totalPartidos : '—'}</div>
                     <div class="etiqueta">Partidos en el calendario</div>
                 </div>
             </div>
             <div class="tarjeta tarjeta-dorada">
                 <span class="tarjeta-icono icono-selecciones" aria-hidden="true"></span>
                 <div class="tarjeta-datos">
-                    <div class="valor">48</div>
+                    <div class="valor">#{dashboardBean.totalSelecciones != null ? dashboardBean.totalSelecciones : '—'}</div>
                     <div class="etiqueta">Selecciones</div>
                 </div>
             </div>
             <div class="tarjeta tarjeta-verde">
                 <span class="tarjeta-icono icono-grupos" aria-hidden="true"></span>
                 <div class="tarjeta-datos">
-                    <div class="valor">12</div>
+                    <div class="valor">#{dashboardBean.totalGrupos != null ? dashboardBean.totalGrupos : '—'}</div>
                     <div class="etiqueta">Grupos</div>
                 </div>
             </div>

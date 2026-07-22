@@ -78,6 +78,22 @@ public class EstadisticasApiClient {
         return usarMockSiFalla ? datosEjemploPartidos() : new ArrayList<>();
     }
 
+    /** Lanza RuntimeException si la API no responde, para que el llamador pueda distinguir "0" de "no se pudo consultar". */
+    public int contarPartidos() {
+        try {
+            Response resp = client.target(baseUrl).path("/Estadisticas/calendario")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            if (resp.getStatus() == 200) {
+                return resp.readEntity(new GenericType<List<Partido>>() {}).size();
+            }
+            LOG.warning("API de calendario respondio codigo " + resp.getStatus());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (conteo de partidos)", e);
+        }
+        throw new IllegalStateException("No se pudo obtener el conteo de partidos.");
+    }
+
     public boolean registrarResultado(Long partidoId, int golesLocal, int golesVisitante, Long usuarioId) {
         try {
             Response resp = client.target(baseUrl).path("/Partidos/" + partidoId + "/resultado")
@@ -107,6 +123,38 @@ public class EstadisticasApiClient {
             LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (selecciones)", e);
         }
         return usarMockSiFalla ? datosEjemploSelecciones() : new ArrayList<>();
+    }
+
+    /** Lanza RuntimeException si la API no responde, para que el llamador pueda distinguir "0" de "no se pudo consultar". */
+    public int contarSelecciones() {
+        try {
+            Response resp = client.target(baseUrl).path("/Selecciones")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            if (resp.getStatus() == 200) {
+                return resp.readEntity(new GenericType<List<Seleccion>>() {}).size();
+            }
+            LOG.warning("API de selecciones respondio codigo " + resp.getStatus());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (conteo de selecciones)", e);
+        }
+        throw new IllegalStateException("No se pudo obtener el conteo de selecciones.");
+    }
+
+    /** Lanza RuntimeException si la API no responde, para que el llamador pueda distinguir "0" de "no se pudo consultar". */
+    public int contarGrupos() {
+        try {
+            Response resp = client.target(baseUrl).path("/Grupos")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            if (resp.getStatus() == 200) {
+                return resp.readEntity(new GenericType<List<Object>>() {}).size();
+            }
+            LOG.warning("API de grupos respondio codigo " + resp.getStatus());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (conteo de grupos)", e);
+        }
+        throw new IllegalStateException("No se pudo obtener el conteo de grupos.");
     }
 
     // ---------------------------------------------------------------
