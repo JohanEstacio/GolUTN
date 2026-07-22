@@ -26,10 +26,10 @@
                     <h:outputText value="#{u.nombre}" />
                 </p:column>
                 <p:column headerText="Correo">
-                    <h:outputText value="#{u.correo}" />
+                    <h:outputText value="#{u.email}" />
                 </p:column>
                 <p:column headerText="Rol">
-                    <p:selectOneMenu value="#{u.rol}">
+                    <p:selectOneMenu value="#{u.rolNombre}">
                         <f:selectItems value="#{usuariosBean.rolesDisponibles}" />
                     </p:selectOneMenu>
                 </p:column>

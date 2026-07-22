@@ -30,7 +30,7 @@ public class AuthFilter implements Filter {
 
         if (usuario == null
                 || !usuario.isActivo()
-                || !"ADMINISTRADOR".equalsIgnoreCase(usuario.getRol())) {
+                || !"ADMINISTRADOR".equalsIgnoreCase(usuario.getRolNombre())) {
             res.sendRedirect(req.getContextPath() + "/login.xhtml");
             return;
         }

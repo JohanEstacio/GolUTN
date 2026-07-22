@@ -23,19 +23,19 @@
                          styleClass="tabla-administrativa tabla-partidos">
 
                 <p:column headerText="Local">
-                    <h:outputText value="#{p.seleccionLocal}" />
+                    <h:outputText value="#{p.localNombre}" />
                 </p:column>
                 <p:column headerText="Visitante">
-                    <h:outputText value="#{p.seleccionVisitante}" />
+                    <h:outputText value="#{p.visitanteNombre}" />
                 </p:column>
                 <p:column headerText="Sede">
-                    <h:outputText value="#{p.sede}" />
+                    <h:outputText value="#{p.sedeNombre}" />
                 </p:column>
                 <p:column headerText="Fase">
-                    <h:outputText value="#{p.fase}" />
+                    <h:outputText value="#{p.faseNombre}" />
                 </p:column>
                 <p:column headerText="Fecha y hora">
-                    <h:outputText value="#{p.fechaHora}">
+                    <h:outputText value="#{p.fechaPartido}">
                         <f:convertDateTime pattern="dd/MM/yyyy HH:mm" type="localDateTime" />
                     </h:outputText>
                 </p:column>
@@ -63,7 +63,7 @@
                 <h:panelGrid columns="2" rendered="#{partidosBean.partidoSeleccionado != null}"
                              styleClass="formulario-dialogo">
                     <h:outputText value="Partido:" styleClass="etiqueta-campo" />
-                    <h:outputText value="#{partidosBean.partidoSeleccionado.seleccionLocal} vs #{partidosBean.partidoSeleccionado.seleccionVisitante}"
+                    <h:outputText value="#{partidosBean.partidoSeleccionado.localNombre} vs #{partidosBean.partidoSeleccionado.visitanteNombre}"
                                   styleClass="partido-seleccionado" />
 
                     <h:outputText value="Goles local:" styleClass="etiqueta-campo" />

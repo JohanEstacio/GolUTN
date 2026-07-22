@@ -24,6 +24,9 @@ public class PartidosBean implements Serializable {
     @Inject
     private EstadisticasApiClient apiClient;
 
+    @Inject
+    private LoginBean loginBean;
+
     private List<Partido> partidos;
     private Partido partidoSeleccionado;
     private Integer golesLocalIngresados;
@@ -49,8 +52,9 @@ public class PartidosBean implements Serializable {
         if (partidoSeleccionado == null || golesLocalIngresados == null || golesVisitanteIngresados == null) {
             return;
         }
+        Long usuarioId = loginBean.getUsuarioActual() != null ? loginBean.getUsuarioActual().getId() : null;
         boolean ok = apiClient.registrarResultado(
-                partidoSeleccionado.getId(), golesLocalIngresados, golesVisitanteIngresados);
+                partidoSeleccionado.getPartidoId(), golesLocalIngresados, golesVisitanteIngresados, usuarioId);
 
         FacesContext fc = FacesContext.getCurrentInstance();
         if (ok) {

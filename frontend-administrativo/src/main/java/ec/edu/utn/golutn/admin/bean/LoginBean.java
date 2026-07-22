@@ -52,7 +52,7 @@ public class LoginBean implements Serializable {
             return null;
         }
 
-        if (!"ADMINISTRADOR".equalsIgnoreCase(u.getRol())) {
+        if (!"ADMINISTRADOR".equalsIgnoreCase(u.getRolNombre())) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR,
                             "Acceso restringido",

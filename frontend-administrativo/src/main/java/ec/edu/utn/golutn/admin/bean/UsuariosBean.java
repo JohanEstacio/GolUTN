@@ -36,7 +36,7 @@ public class UsuariosBean implements Serializable {
     }
 
     public void cambiarRol(Usuario usuario) {
-        boolean ok = apiClient.actualizarRolUsuario(usuario.getId(), usuario.getRol());
+        boolean ok = apiClient.actualizarRolUsuario(usuario.getId(), usuario.getRolNombre());
         FacesContext fc = FacesContext.getCurrentInstance();
         if (ok) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
