@@ -7,30 +7,51 @@
     <ui:param name="titulo" value="Reportes" />
 
     <ui:define name="contenido">
-        <h2>Reportes y auditoria</h2>
-        <p>Indicadores basicos del torneo y de la moneda virtual UTNGolCoin.</p>
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Analítica</span>
+                <h1>Reportes y auditoría</h1>
+                <p>Indicadores operativos del torneo y de la moneda virtual UTNGolCoin.</p>
+            </div>
+            <span class="insignia-edicion insignia-dorada">Resumen general</span>
+        </header>
 
         <div class="tarjetas-resumen">
-            <div class="tarjeta">
-                <div class="valor">#{reportesBean.resumen.totalPredicciones}</div>
-                <div class="etiqueta">Predicciones totales</div>
+            <div class="tarjeta tarjeta-azul">
+                <span class="tarjeta-icono icono-predicciones" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">#{reportesBean.resumen.totalPredicciones}</div>
+                    <div class="etiqueta">Predicciones totales</div>
+                </div>
             </div>
-            <div class="tarjeta">
-                <div class="valor">#{reportesBean.resumen.utnGolCoinEnCirculacion}</div>
-                <div class="etiqueta">UTNGolCoin en circulacion</div>
+            <div class="tarjeta tarjeta-dorada">
+                <span class="tarjeta-icono icono-moneda" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">#{reportesBean.resumen.utnGolCoinEnCirculacion}</div>
+                    <div class="etiqueta">UTNGolCoin en circulación</div>
+                </div>
             </div>
-            <div class="tarjeta">
-                <div class="valor">#{reportesBean.resumen.usuariosRegistrados}</div>
-                <div class="etiqueta">Usuarios registrados</div>
+            <div class="tarjeta tarjeta-azul">
+                <span class="tarjeta-icono icono-usuarios" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">#{reportesBean.resumen.usuariosRegistrados}</div>
+                    <div class="etiqueta">Usuarios registrados</div>
+                </div>
             </div>
-            <div class="tarjeta">
-                <div class="valor">#{reportesBean.resumen.partidosFinalizados}</div>
-                <div class="etiqueta">Partidos finalizados</div>
+            <div class="tarjeta tarjeta-verde">
+                <span class="tarjeta-icono icono-finalizados" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">#{reportesBean.resumen.partidosFinalizados}</div>
+                    <div class="etiqueta">Partidos finalizados</div>
+                </div>
             </div>
         </div>
 
-        <p:panel header="Partido con mas predicciones">
-            <h:outputText value="#{reportesBean.resumen.partidoMasPredicciones}" />
+        <p:panel header="Partido con más predicciones" styleClass="panel-seccion panel-destacado">
+            <div class="dato-destacado">
+                <span class="dato-destacado-icono" aria-hidden="true"></span>
+                <h:outputText value="#{reportesBean.resumen.partidoMasPredicciones}" />
+            </div>
         </p:panel>
     </ui:define>
 </ui:composition>

@@ -1,12 +1,26 @@
 package ec.edu.utn.golutn.admin.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 /** Uno de los 104 partidos del torneo. */
 public class Partido implements Serializable {
 
-    public enum Estado { PROGRAMADO, EN_JUEGO, FINALIZADO }
+    public enum Estado {
+        PROGRAMADO, EN_JUEGO, FINALIZADO, SUSPENDIDO, CANCELADO, DESCONOCIDO;
+
+        @JsonCreator
+        public static Estado desde(String valor) {
+            if (valor == null || valor.isBlank()) return DESCONOCIDO;
+            String normalizado = valor.trim().toUpperCase(Locale.ROOT).replace(' ', '_');
+            for (Estado e : values()) {
+                if (e.name().equals(normalizado)) return e;
+            }
+            return DESCONOCIDO;
+        }
+    }
 
     private Long id;
     private String seleccionLocal;
@@ -55,6 +69,10 @@ public class Partido implements Serializable {
 
     public Estado getEstado() { return estado; }
     public void setEstado(Estado estado) { this.estado = estado; }
+
+    public String getEstadoCss() {
+        return estado == null ? "desconocido" : estado.name().toLowerCase(Locale.ROOT);
+    }
 
     public Integer getGolesLocal() { return golesLocal; }
     public void setGolesLocal(Integer golesLocal) { this.golesLocal = golesLocal; }

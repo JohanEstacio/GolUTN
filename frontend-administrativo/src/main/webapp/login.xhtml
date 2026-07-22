@@ -6,31 +6,40 @@
 
 <h:head>
     <title>GolUTN Admin - Acceso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <h:outputStylesheet library="css" name="estilos.css" />
 </h:head>
 
-<h:body>
+<h:body styleClass="pagina-login">
     <div class="login-wrapper">
         <div class="login-card">
-            <h1>Panel Administrativo UTN GolMundial 2026</h1>
-            <p class="subtitulo">Acceso exclusivo para administradores</p>
+            <div class="login-identidad" aria-hidden="true">
+                <span class="balon-academico"></span>
+                <span>GolUTN</span>
+                <span class="badge-admin">ADMIN</span>
+            </div>
+            <h1>Panel Administrativo</h1>
+            <p class="login-edicion">Mundial 2026</p>
+            <p class="subtitulo">Acceso seguro para el equipo de administración</p>
 
             <h:form id="formLogin">
                 <p:messages showDetail="true" closable="true" />
 
+                <p:outputLabel for="correo" value="Correo institucional" />
                 <p:inputText id="correo" value="#{loginBean.correo}"
                              placeholder="Correo institucional" required="true"
                              requiredMessage="Ingresa tu correo" />
 
+                <p:outputLabel for="password" value="Contraseña" />
                 <p:password id="password" value="#{loginBean.password}"
                             placeholder="Contraseña" feedback="false"
                             required="true" requiredMessage="Ingresa tu contraseña" />
 
-                <p:commandButton value="Ingresar" action="#{loginBean.iniciarSesion}"
-                                 ajax="false" />
+                <p:commandButton value="Ingresar al panel" action="#{loginBean.iniciarSesion}"
+                                 ajax="false" styleClass="boton-principal" />
 
-                <p style="font-size:0.75rem;color:#888;margin-top:1rem;">
-                    Demo mientras el backend no esta desplegado:<br/>
+                <p class="login-demo">
+                    <strong>Acceso de demostración</strong><br/>
                     admin@golutn.edu.ec / admin123
                 </p>
             </h:form>

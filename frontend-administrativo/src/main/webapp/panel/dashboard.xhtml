@@ -7,28 +7,54 @@
     <ui:param name="titulo" value="Inicio" />
 
     <ui:define name="contenido">
-        <h2>Bienvenido, #{loginBean.usuarioActual.nombre}</h2>
-        <p>Panel de control del Mundial 2026. Desde aqui gestionas partidos, usuarios y reportes del torneo.</p>
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Vista general</span>
+                <h1>Bienvenido, #{loginBean.usuarioActual.nombre}</h1>
+                <p>Supervisa y gestiona la operación administrativa del Mundial 2026.</p>
+            </div>
+            <span class="insignia-edicion">Edición 2026</span>
+        </header>
 
         <div class="tarjetas-resumen">
-            <div class="tarjeta">
-                <div class="valor">104</div>
-                <div class="etiqueta">Partidos en el calendario</div>
+            <div class="tarjeta tarjeta-azul">
+                <span class="tarjeta-icono icono-partidos" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">104</div>
+                    <div class="etiqueta">Partidos en el calendario</div>
+                </div>
             </div>
-            <div class="tarjeta">
-                <div class="valor">48</div>
-                <div class="etiqueta">Selecciones</div>
+            <div class="tarjeta tarjeta-dorada">
+                <span class="tarjeta-icono icono-selecciones" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">48</div>
+                    <div class="etiqueta">Selecciones</div>
+                </div>
             </div>
-            <div class="tarjeta">
-                <div class="valor">12</div>
-                <div class="etiqueta">Grupos</div>
+            <div class="tarjeta tarjeta-verde">
+                <span class="tarjeta-icono icono-grupos" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">12</div>
+                    <div class="etiqueta">Grupos</div>
+                </div>
             </div>
         </div>
 
-        <p:panel header="Accesos rapidos">
-            <h:link outcome="/panel/partidos" value="Ir a Gestion de partidos" style="display:block;margin-bottom:0.6rem;" />
-            <h:link outcome="/panel/usuarios" value="Ir a Gestion de usuarios" style="display:block;margin-bottom:0.6rem;" />
-            <h:link outcome="/panel/reportes" value="Ir a Reportes y auditoria" style="display:block;" />
+        <p:panel header="Accesos rápidos" styleClass="panel-seccion panel-accesos">
+            <div class="accesos-rapidos">
+                <h:link outcome="/panel/partidos" styleClass="acceso acceso-partidos">
+                    <span class="acceso-icono" aria-hidden="true"></span>
+                    <span><strong>Gestionar partidos</strong><small>Calendario y resultados oficiales</small></span>
+                </h:link>
+                <h:link outcome="/panel/usuarios" styleClass="acceso acceso-usuarios">
+                    <span class="acceso-icono" aria-hidden="true"></span>
+                    <span><strong>Gestionar usuarios</strong><small>Cuentas, roles y estados</small></span>
+                </h:link>
+                <h:link outcome="/panel/reportes" styleClass="acceso acceso-reportes">
+                    <span class="acceso-icono" aria-hidden="true"></span>
+                    <span><strong>Consultar reportes</strong><small>Indicadores y auditoría</small></span>
+                </h:link>
+            </div>
         </p:panel>
     </ui:define>
 </ui:composition>

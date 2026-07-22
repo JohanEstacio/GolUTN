@@ -8,13 +8,19 @@
     <ui:param name="titulo" value="Gestion de partidos" />
 
     <ui:define name="contenido">
-        <h2>Gestion de partidos</h2>
-        <p>Consulta el calendario y registra el resultado oficial de cada partido finalizado.</p>
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Competición</span>
+                <h1>Gestión de partidos</h1>
+                <p>Consulta el calendario y registra el resultado oficial de cada encuentro.</p>
+            </div>
+        </header>
 
-        <h:form id="formPartidos">
+        <h:form id="formPartidos" styleClass="contenedor-tabla">
             <p:dataTable id="tablaPartidos" var="p" value="#{partidosBean.partidos}"
-                         emptyMessage="No hay partidos cargados todavia."
-                         paginator="true" rows="10" styleClass="tabla-partidos">
+                         emptyMessage="No hay partidos cargados todavía."
+                         paginator="true" rows="10" reflow="true"
+                         styleClass="tabla-administrativa tabla-partidos">
 
                 <p:column headerText="Local">
                     <h:outputText value="#{p.seleccionLocal}" />
@@ -34,7 +40,7 @@
                     </h:outputText>
                 </p:column>
                 <p:column headerText="Estado">
-                    <span class="estado-tag estado-#{p.estado.toString().toLowerCase()}">
+                    <span class="estado-tag estado-#{p.estadoCss}">
                         #{p.estado}
                     </span>
                 </p:column>
@@ -43,29 +49,36 @@
                                   rendered="#{p.golesLocal != null}" />
                     <h:outputText value="Sin jugar" rendered="#{p.golesLocal == null}" />
                 </p:column>
-                <p:column headerText="Accion">
+                <p:column headerText="Acción">
                     <p:commandButton value="Registrar resultado"
                                      actionListener="#{partidosBean.prepararRegistroResultado(p)}"
-                                     update=":formPartidos:dialogResultado" oncomplete="PF('dlgResultado').show()" />
+                                     update=":formPartidos:dialogResultado" oncomplete="PF('dlgResultado').show()"
+                                     styleClass="boton-compacto" />
                 </p:column>
             </p:dataTable>
 
             <!-- Dialogo para registrar el resultado oficial (RF11, CP09, CP10) -->
-            <p:dialog id="dialogResultado" header="Registrar resultado oficial" widgetVar="dlgResultado" modal="true" width="380">
-                <h:panelGrid columns="2" cellpadding="6" rendered="#{partidosBean.partidoSeleccionado != null}">
-                    <h:outputText value="Partido:" />
-                    <h:outputText value="#{partidosBean.partidoSeleccionado.seleccionLocal} vs #{partidosBean.partidoSeleccionado.seleccionVisitante}" />
+            <p:dialog id="dialogResultado" header="Registrar resultado oficial" widgetVar="dlgResultado"
+                      modal="true" width="380" responsive="true" styleClass="dialogo-resultado">
+                <h:panelGrid columns="2" rendered="#{partidosBean.partidoSeleccionado != null}"
+                             styleClass="formulario-dialogo">
+                    <h:outputText value="Partido:" styleClass="etiqueta-campo" />
+                    <h:outputText value="#{partidosBean.partidoSeleccionado.seleccionLocal} vs #{partidosBean.partidoSeleccionado.seleccionVisitante}"
+                                  styleClass="partido-seleccionado" />
 
-                    <h:outputText value="Goles local:" />
-                    <p:inputNumber value="#{partidosBean.golesLocalIngresados}" decimalPlaces="0" minValue="0" />
+                    <h:outputText value="Goles local:" styleClass="etiqueta-campo" />
+                    <p:inputNumber value="#{partidosBean.golesLocalIngresados}" decimalPlaces="0" minValue="0"
+                                   inputStyleClass="campo-marcador" />
 
-                    <h:outputText value="Goles visitante:" />
-                    <p:inputNumber value="#{partidosBean.golesVisitanteIngresados}" decimalPlaces="0" minValue="0" />
+                    <h:outputText value="Goles visitante:" styleClass="etiqueta-campo" />
+                    <p:inputNumber value="#{partidosBean.golesVisitanteIngresados}" decimalPlaces="0" minValue="0"
+                                   inputStyleClass="campo-marcador" />
                 </h:panelGrid>
 
-                <div style="text-align:right;margin-top:1rem;">
+                <div class="acciones-dialogo">
                     <p:commandButton value="Guardar resultado" action="#{partidosBean.guardarResultado}"
-                                     update=":formPartidos" oncomplete="PF('dlgResultado').hide()" />
+                                     update=":formPartidos" oncomplete="PF('dlgResultado').hide()"
+                                     styleClass="boton-principal" />
                 </div>
             </p:dialog>
         </h:form>

@@ -24,7 +24,7 @@ public class UsuariosBean implements Serializable {
     private EstadisticasApiClient apiClient;
 
     private List<Usuario> usuarios;
-    private final String[] rolesDisponibles = { "ADMINISTRADOR", "USUARIO", "INVITADO" };
+    private final String[] rolesDisponibles = { "ADMINISTRADOR", "USUARIO"};
 
     @PostConstruct
     public void init() {

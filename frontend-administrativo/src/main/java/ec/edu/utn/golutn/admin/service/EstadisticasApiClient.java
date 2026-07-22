@@ -206,7 +206,6 @@ public class EstadisticasApiClient {
         lista.add(new Usuario(1L, "Administrador Demo", "admin@golutn.edu.ec", "ADMINISTRADOR", true));
         lista.add(new Usuario(2L, "Ana Torres", "ana.torres@utn.edu.ec", "USUARIO", true));
         lista.add(new Usuario(3L, "Luis Perez", "luis.perez@utn.edu.ec", "USUARIO", true));
-        lista.add(new Usuario(4L, "Invitado Demo", "invitado@golutn.edu.ec", "INVITADO", true));
         return lista;
     }
 }
