@@ -12,6 +12,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -142,32 +143,49 @@ public class EstadisticasApiClient {
     // AUTENTICACION (RF02)
     // ---------------------------------------------------------------
 
-    public Usuario iniciarSesion(String username, String password) {
-        try {
-            Response resp = client.target(baseUrl).path("/Auth/login")
+    public Usuario iniciarSesion(String username, String password) throws AutenticacionException {
+        try (Response resp = client.target(baseUrl).path("Auth/login")
                     .request(MediaType.APPLICATION_JSON)
-                    .post(Entity.json(new LoginRequestDto(username, password)));
+                    .post(Entity.json(new LoginRequestDto(username, password)))) {
 
-            if (resp.getStatus() == 200) {
-                return resp.readEntity(Usuario.class);
+            switch (resp.getStatus()) {
+                case 200: {
+                    try {
+                        Usuario usuario = resp.readEntity(Usuario.class);
+                        if (usuario == null) {
+                            throw new AutenticacionException(
+                                    AutenticacionException.Tipo.RESPUESTA_INESPERADA,
+                                    "La respuesta de autenticacion no contiene un usuario.");
+                        }
+                        return usuario;
+                    } catch (ProcessingException e) {
+                        throw new AutenticacionException(
+                                AutenticacionException.Tipo.RESPUESTA_INESPERADA,
+                                "La respuesta de autenticacion no tiene el formato esperado.", e);
+                    }
+                }
+                case 401:
+                    throw new AutenticacionException(
+                            AutenticacionException.Tipo.CREDENCIALES_INVALIDAS,
+                            "El username o la contrasena no son validos.");
+                case 403:
+                    throw new AutenticacionException(
+                            AutenticacionException.Tipo.ACCESO_DENEGADO,
+                            "El backend denego el acceso del usuario.");
+                default:
+                    LOG.warning("API de login respondio codigo " + resp.getStatus());
+                    throw new AutenticacionException(
+                            AutenticacionException.Tipo.RESPUESTA_INESPERADA,
+                            "La API de autenticacion respondio con codigo " + resp.getStatus() + ".");
             }
-
-            if (resp.getStatus() == 401 || resp.getStatus() == 403) {
-                // El backend SI esta arriba y respondio que las credenciales son invalidas.
-                return null;
-            }
-
-            // Cualquier otro codigo (404, 500, etc.) significa que el backend
-            // todavia no tiene ese endpoint listo -> usamos el modo mock.
-            LOG.warning("API de login respondio codigo " + resp.getStatus() + ", usando datos de ejemplo");
-        } catch (Exception e) {
-            LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (login), usando modo mock", e);
+        } catch (AutenticacionException e) {
+            throw e;
+        } catch (ProcessingException e) {
+            LOG.log(Level.WARNING, "No se pudo conectar a la API de autenticacion", e);
+            throw new AutenticacionException(
+                    AutenticacionException.Tipo.CONEXION,
+                    "No fue posible conectar con la API de autenticacion.", e);
         }
-
-        if (usarMockSiFalla && "admin@golutn.edu.ec".equalsIgnoreCase(username) && "admin123".equals(password)) {
-            return new Usuario(1L, "admin", "Administrador Demo", username, "ADMINISTRADOR", true);
-        }
-        return null;
     }
 
     // ---------------------------------------------------------------

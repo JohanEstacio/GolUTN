@@ -1,6 +1,7 @@
 package ec.edu.utn.golutn.admin.bean;
 
 import ec.edu.utn.golutn.admin.model.Usuario;
+import ec.edu.utn.golutn.admin.service.AutenticacionException;
 import ec.edu.utn.golutn.admin.service.EstadisticasApiClient;
 
 import jakarta.enterprise.context.SessionScoped;
@@ -23,24 +24,14 @@ public class LoginBean implements Serializable {
     @Inject
     private EstadisticasApiClient apiClient;
 
-    private String correo;
-    private String password;
     private Usuario usuarioActual;
 
-    public String iniciarSesion() {
+    public String iniciarSesion(String username, String password) {
         Usuario u;
         try {
-            u = apiClient.iniciarSesion(correo, password);
-        } finally {
-            password = null;
-        }
-
-        if (u == null) {
-            // CP02: credenciales invalidas -> mensaje de error claro (RNF10)
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Credenciales incorrectas",
-                            "El correo o la contraseña no son validos."));
+            u = apiClient.iniciarSesion(username, password);
+        } catch (AutenticacionException e) {
+            mostrarErrorAutenticacion(e);
             return null;
         }
 
@@ -67,6 +58,32 @@ public class LoginBean implements Serializable {
         return "/panel/dashboard.xhtml?faces-redirect=true";
     }
 
+    private void mostrarErrorAutenticacion(AutenticacionException e) {
+        String resumen;
+        String detalle;
+
+        switch (e.getTipo()) {
+            case CREDENCIALES_INVALIDAS:
+                resumen = "Credenciales incorrectas";
+                detalle = "El username o la contraseña no son válidos.";
+                break;
+            case ACCESO_DENEGADO:
+                resumen = "Acceso denegado";
+                detalle = "El backend no autoriza el acceso de este usuario.";
+                break;
+            case CONEXION:
+                resumen = "Servicio no disponible";
+                detalle = "No se pudo conectar con el servicio de autenticación. Intenta nuevamente.";
+                break;
+            default:
+                resumen = "Error de autenticación";
+                detalle = "El servicio de autenticación devolvió una respuesta inesperada.";
+        }
+
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, resumen, detalle));
+    }
+
     public String cerrarSesion() {
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         return "/index.xhtml?faces-redirect=true";
@@ -75,12 +92,6 @@ public class LoginBean implements Serializable {
     public boolean isAutenticado() {
         return usuarioActual != null;
     }
-
-    public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
 
     public Usuario getUsuarioActual() { return usuarioActual; }
 }

@@ -25,22 +25,22 @@
             <h:form id="formLogin">
                 <p:messages showDetail="true" closable="true" />
 
-                <p:outputLabel for="correo" value="Correo institucional" />
-                <p:inputText id="correo" value="#{loginBean.correo}"
-                             placeholder="Correo institucional" required="true"
-                             requiredMessage="Ingresa tu correo" />
+                <p:outputLabel for="username" value="Usuario" />
+                <p:inputText id="username" value="#{loginFormBean.username}"
+                             placeholder="Username" required="true"
+                             requiredMessage="Ingresa tu username" autocomplete="username" />
 
                 <p:outputLabel for="password" value="Contraseña" />
-                <p:password id="password" value="#{loginBean.password}"
+                <p:password id="password" value="#{loginFormBean.password}"
                             placeholder="Contraseña" feedback="false"
-                            required="true" requiredMessage="Ingresa tu contraseña" />
+                            required="true" requiredMessage="Ingresa tu contraseña"
+                            autocomplete="current-password" />
 
-                <p:commandButton value="Ingresar al panel" action="#{loginBean.iniciarSesion}"
+                <p:commandButton value="Ingresar al panel" action="#{loginFormBean.iniciarSesion}"
                                  ajax="false" styleClass="boton-principal" />
 
                 <p class="login-demo">
-                    <strong>Acceso de demostración</strong><br/>
-                    admin@golutn.edu.ec / admin123
+                    Ingresa con el username asignado por el administrador.
                 </p>
             </h:form>
         </div>

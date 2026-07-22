@@ -41,7 +41,7 @@
     <!-- URL base del Servicio de Estadisticas (backend). Cambiar cuando este desplegado. -->
     <context-param>
         <param-name>ESTADISTICAS_API_URL</param-name>
-        <param-value>http://localhost:5138/api</param-value>
+        <param-value>http://10.116.216.198:5138/api</param-value>
     </context-param>
 
     <!-- URL base del Servicio UTNGolCoin (para reportes de monedas en circulacion) -->
