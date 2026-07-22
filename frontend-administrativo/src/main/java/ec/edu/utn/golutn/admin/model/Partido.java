@@ -33,6 +33,7 @@ public class Partido implements Serializable {
     private String visitanteNombre;
     private String visitanteCodigoFifa;
 
+    private Long sedeId;
     private String sedeNombre;
     private String sedeCiudad;
     private String sedePais;
@@ -74,6 +75,9 @@ public class Partido implements Serializable {
 
     public String getVisitanteCodigoFifa() { return visitanteCodigoFifa; }
     public void setVisitanteCodigoFifa(String visitanteCodigoFifa) { this.visitanteCodigoFifa = visitanteCodigoFifa; }
+
+    public Long getSedeId() { return sedeId; }
+    public void setSedeId(Long sedeId) { this.sedeId = sedeId; }
 
     public String getSedeNombre() { return sedeNombre; }
     public void setSedeNombre(String sedeNombre) { this.sedeNombre = sedeNombre; }

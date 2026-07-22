@@ -1,6 +1,11 @@
 package ec.edu.utn.golutn.admin.bean;
 
+import ec.edu.utn.golutn.admin.dto.PartidoRequestDto;
+import ec.edu.utn.golutn.admin.model.Fase;
+import ec.edu.utn.golutn.admin.model.Grupo;
 import ec.edu.utn.golutn.admin.model.Partido;
+import ec.edu.utn.golutn.admin.model.Sede;
+import ec.edu.utn.golutn.admin.model.Seleccion;
 import ec.edu.utn.golutn.admin.service.EstadisticasApiClient;
 
 import jakarta.annotation.PostConstruct;
@@ -14,7 +19,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Gestion de partidos y registro de resultados oficiales.
+ * Gestion de partidos: alta, edicion y registro de resultados oficiales.
  * Cubre RF10, RF11, RF12 y los casos de prueba CP09/CP10.
  */
 @Named("partidosBean")
@@ -32,13 +37,32 @@ public class PartidosBean implements Serializable {
     private Integer golesLocalIngresados;
     private Integer golesVisitanteIngresados;
 
+    // Catalogos para el formulario de creacion/edicion (RF10)
+    private List<Seleccion> selecciones;
+    private List<Fase> fases;
+    private List<Grupo> grupos;
+    private List<Sede> sedes;
+
+    // Alta y edicion de partidos (RF10)
+    private PartidoRequestDto partidoEnEdicion;
+    private Long partidoIdEnEdicion;
+    private boolean guardadoExitoso;
+
     @PostConstruct
     public void init() {
         cargarPartidos();
+        cargarCatalogos();
     }
 
     public void cargarPartidos() {
         this.partidos = apiClient.listarPartidos();
+    }
+
+    public void cargarCatalogos() {
+        this.selecciones = apiClient.listarSelecciones();
+        this.fases = apiClient.listarFases();
+        this.grupos = apiClient.listarGrupos();
+        this.sedes = apiClient.listarSedes();
     }
 
     public void prepararRegistroResultado(Partido partido) {
@@ -69,6 +93,90 @@ public class PartidosBean implements Serializable {
         }
     }
 
+    /** RF10: abre el formulario en blanco para agregar un partido nuevo al calendario. */
+    public void prepararNuevo() {
+        this.partidoIdEnEdicion = null;
+        this.guardadoExitoso = false;
+        PartidoRequestDto dto = new PartidoRequestDto();
+        dto.setEstado(Partido.Estado.PROGRAMADO);
+        this.partidoEnEdicion = dto;
+    }
+
+    /** RF10: pre-llena el formulario a partir de los datos y los IDs que ya trae el CalendarioPartidoDto. */
+    public void prepararEdicion(Partido partido) {
+        this.partidoIdEnEdicion = partido.getPartidoId();
+        this.guardadoExitoso = false;
+
+        PartidoRequestDto dto = new PartidoRequestDto();
+        dto.setId(partido.getPartidoId());
+        dto.setNumeroPartidoFifa(partido.getNumeroPartidoFifa());
+        dto.setFechaPartido(partido.getFechaPartido());
+        dto.setEstado(partido.getEstado());
+        // Se conservan los goles ya registrados para no borrar resultados existentes.
+        dto.setGolesLocal(partido.getGolesLocal());
+        dto.setGolesVisitante(partido.getGolesVisitante());
+        dto.setFaseCodigo(partido.getFaseCodigo());
+        dto.setGrupoCodigo(partido.getGrupoCodigo());
+        dto.setSedeId(partido.getSedeId());
+        dto.setLocalId(partido.getLocalId());
+        dto.setVisitanteId(partido.getVisitanteId());
+        this.partidoEnEdicion = dto;
+
+        if (partido.getEstado() == Partido.Estado.FINALIZADO) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Partido finalizado",
+                    "Este partido ya finalizo. Modificar sus datos puede afectar resultados y predicciones ya liquidadas."));
+        }
+    }
+
+    /** RF10 / RNF10: valida y crea o actualiza el partido segun corresponda. */
+    public void guardarPartido() {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        if (partidoEnEdicion == null) {
+            return;
+        }
+
+        if (partidoEnEdicion.getLocalId() == null || partidoEnEdicion.getVisitanteId() == null) {
+            guardadoExitoso = false;
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Seleccion incompleta",
+                    "Debes seleccionar la seleccion local y la seleccion visitante."));
+            return;
+        }
+        if (partidoEnEdicion.getLocalId().equals(partidoEnEdicion.getVisitanteId())) {
+            guardadoExitoso = false;
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Seleccion invalida",
+                    "La seleccion local y la visitante no pueden ser la misma."));
+            return;
+        }
+        if (partidoEnEdicion.getFechaPartido() == null) {
+            guardadoExitoso = false;
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Fecha requerida",
+                    "Debes indicar la fecha y hora del partido."));
+            return;
+        }
+
+        boolean esEdicion = partidoIdEnEdicion != null;
+        boolean ok = esEdicion
+                ? apiClient.actualizarPartido(partidoIdEnEdicion, partidoEnEdicion)
+                : apiClient.crearPartido(partidoEnEdicion);
+
+        guardadoExitoso = ok;
+        if (ok) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
+                    esEdicion ? "Partido actualizado" : "Partido creado",
+                    esEdicion ? "Los datos del partido se guardaron correctamente."
+                              : "El partido se agrego al calendario correctamente."));
+            cargarPartidos();
+        } else {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "No se pudo guardar",
+                    "Intenta nuevamente o revisa la conexion con el Servicio de Estadisticas."));
+        }
+    }
+
     public List<Partido> getPartidos() { return partidos; }
 
     public Partido getPartidoSeleccionado() { return partidoSeleccionado; }
@@ -79,4 +187,26 @@ public class PartidosBean implements Serializable {
 
     public Integer getGolesVisitanteIngresados() { return golesVisitanteIngresados; }
     public void setGolesVisitanteIngresados(Integer v) { this.golesVisitanteIngresados = v; }
+
+    public List<Seleccion> getSelecciones() { return selecciones; }
+
+    public List<Fase> getFases() { return fases; }
+
+    public List<Grupo> getGrupos() { return grupos; }
+
+    public List<Sede> getSedes() { return sedes; }
+
+    public Partido.Estado[] getEstadosDisponibles() {
+        return new Partido.Estado[] {
+                Partido.Estado.PROGRAMADO, Partido.Estado.EN_JUEGO,
+                Partido.Estado.FINALIZADO, Partido.Estado.SUSPENDIDO, Partido.Estado.CANCELADO
+        };
+    }
+
+    public PartidoRequestDto getPartidoEnEdicion() { return partidoEnEdicion; }
+    public void setPartidoEnEdicion(PartidoRequestDto partidoEnEdicion) { this.partidoEnEdicion = partidoEnEdicion; }
+
+    public boolean isEditando() { return partidoIdEnEdicion != null; }
+
+    public boolean isGuardadoExitoso() { return guardadoExitoso; }
 }

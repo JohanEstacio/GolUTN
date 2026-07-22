@@ -12,11 +12,18 @@
             <div>
                 <span class="sobretitulo">Competición</span>
                 <h1>Gestión de partidos</h1>
-                <p>Consulta el calendario y registra el resultado oficial de cada encuentro.</p>
+                <p>Consulta el calendario, crea o edita partidos y registra el resultado oficial de cada encuentro.</p>
             </div>
         </header>
 
         <h:form id="formPartidos" styleClass="contenedor-tabla">
+            <div class="acciones-tabla">
+                <p:commandButton value="Nuevo partido" icon="pi pi-plus"
+                                 actionListener="#{partidosBean.prepararNuevo}"
+                                 update=":formPartidos:dialogPartido" oncomplete="PF('dlgPartido').show()"
+                                 styleClass="boton-principal" />
+            </div>
+
             <p:dataTable id="tablaPartidos" var="p" value="#{partidosBean.partidos}"
                          emptyMessage="No hay partidos cargados todavía."
                          paginator="true" rows="10" reflow="true"
@@ -50,12 +57,80 @@
                     <h:outputText value="Sin jugar" rendered="#{p.golesLocal == null}" />
                 </p:column>
                 <p:column headerText="Acción">
+                    <p:commandButton value="Editar"
+                                     actionListener="#{partidosBean.prepararEdicion(p)}"
+                                     update=":formPartidos:dialogPartido" oncomplete="PF('dlgPartido').show()"
+                                     styleClass="boton-compacto" />
                     <p:commandButton value="Registrar resultado"
                                      actionListener="#{partidosBean.prepararRegistroResultado(p)}"
                                      update=":formPartidos:dialogResultado" oncomplete="PF('dlgResultado').show()"
                                      styleClass="boton-compacto" />
                 </p:column>
             </p:dataTable>
+
+            <!-- Dialogo para crear o editar un partido (RF10, RNF10) -->
+            <p:dialog id="dialogPartido" header="#{partidosBean.editando ? 'Editar partido' : 'Nuevo partido'}"
+                      widgetVar="dlgPartido" modal="true" width="460" responsive="true" styleClass="dialogo-partido">
+                <p:messages id="mensajesPartido" showDetail="true" closable="true" />
+
+                <h:panelGrid columns="2" rendered="#{partidosBean.partidoEnEdicion != null}"
+                             styleClass="formulario-dialogo">
+                    <h:outputText value="Número FIFA:" styleClass="etiqueta-campo" />
+                    <p:inputNumber value="#{partidosBean.partidoEnEdicion.numeroPartidoFifa}"
+                                   decimalPlaces="0" minValue="1" />
+
+                    <h:outputText value="Fase:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.faseCodigo}">
+                        <f:selectItem itemLabel="Selecciona una fase" itemValue="" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.fases}" var="fase"
+                                       itemLabel="#{fase.nombre}" itemValue="#{fase.codigo}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Grupo:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.grupoCodigo}">
+                        <f:selectItem itemLabel="Sin grupo" itemValue="" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.grupos}" var="grupo"
+                                       itemLabel="#{grupo.nombre}" itemValue="#{grupo.codigo}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Sede:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.sedeId}">
+                        <f:selectItem itemLabel="Selecciona una sede" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.sedes}" var="sede"
+                                       itemLabel="#{sede.nombre} - #{sede.ciudad}" itemValue="#{sede.id}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Selección local:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.localId}">
+                        <f:selectItem itemLabel="Selecciona un equipo" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.selecciones}" var="seleccion"
+                                       itemLabel="#{seleccion.nombre}" itemValue="#{seleccion.id}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Selección visitante:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.visitanteId}">
+                        <f:selectItem itemLabel="Selecciona un equipo" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.selecciones}" var="seleccion"
+                                       itemLabel="#{seleccion.nombre}" itemValue="#{seleccion.id}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Fecha y hora:" styleClass="etiqueta-campo" />
+                    <p:datePicker value="#{partidosBean.partidoEnEdicion.fechaPartido}"
+                                  pattern="dd/MM/yyyy HH:mm" showTime="true" hourFormat="24" />
+
+                    <h:outputText value="Estado:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.estado}">
+                        <f:selectItems value="#{partidosBean.estadosDisponibles}" />
+                    </p:selectOneMenu>
+                </h:panelGrid>
+
+                <div class="acciones-dialogo">
+                    <p:commandButton value="Guardar partido" action="#{partidosBean.guardarPartido}"
+                                     update=":formPartidos"
+                                     oncomplete="if (#{partidosBean.guardadoExitoso}) { PF('dlgPartido').hide(); }"
+                                     styleClass="boton-principal" />
+                </div>
+            </p:dialog>
 
             <!-- Dialogo para registrar el resultado oficial (RF11, CP09, CP10) -->
             <p:dialog id="dialogResultado" header="Registrar resultado oficial" widgetVar="dlgResultado"

@@ -1,8 +1,13 @@
 package ec.edu.utn.golutn.admin.service;
 
 import ec.edu.utn.golutn.admin.dto.LoginRequestDto;
+import ec.edu.utn.golutn.admin.dto.PartidoRequestDto;
 import ec.edu.utn.golutn.admin.dto.ResultadoRequestDto;
+import ec.edu.utn.golutn.admin.model.Auditoria;
+import ec.edu.utn.golutn.admin.model.Fase;
+import ec.edu.utn.golutn.admin.model.Grupo;
 import ec.edu.utn.golutn.admin.model.Partido;
+import ec.edu.utn.golutn.admin.model.Sede;
 import ec.edu.utn.golutn.admin.model.Seleccion;
 import ec.edu.utn.golutn.admin.model.Usuario;
 
@@ -107,8 +112,38 @@ public class EstadisticasApiClient {
         }
     }
 
+    public boolean crearPartido(PartidoRequestDto datos) {
+        try {
+            Response resp = client.target(baseUrl).path("/Partidos")
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(datos));
+            return resp.getStatus() == 200 || resp.getStatus() == 201;
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo crear el partido en la API (modo mock)", e);
+            return usarMockSiFalla;
+        }
+    }
+
+    public boolean actualizarPartido(Long partidoId, PartidoRequestDto datos) {
+        try {
+            Response resp = client.target(baseUrl).path("/Partidos/" + partidoId)
+                    .request(MediaType.APPLICATION_JSON)
+                    .put(Entity.json(datos));
+            if (resp.getStatus() >= 200 && resp.getStatus() < 300) {
+                return true;
+            }
+            String cuerpo = resp.readEntity(String.class);
+            LOG.warning("API de actualizacion de partido respondio codigo " + resp.getStatus()
+                    + " - cuerpo: " + cuerpo);
+            return false;
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo actualizar el partido en la API (modo mock)", e);
+            return usarMockSiFalla;
+        }
+    }
+
     // ---------------------------------------------------------------
-    // SELECCIONES / GRUPOS
+    // SELECCIONES / FASES / GRUPOS / SEDES
     // ---------------------------------------------------------------
 
     public List<Seleccion> listarSelecciones() {
@@ -157,6 +192,51 @@ public class EstadisticasApiClient {
         throw new IllegalStateException("No se pudo obtener el conteo de grupos.");
     }
 
+    public List<Fase> listarFases() {
+        try {
+            Response resp = client.target(baseUrl).path("/Fases")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            if (resp.getStatus() == 200) {
+                return resp.readEntity(new GenericType<List<Fase>>() {});
+            }
+            LOG.warning("API de fases respondio codigo " + resp.getStatus());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (fases)", e);
+        }
+        return usarMockSiFalla ? datosEjemploFases() : new ArrayList<>();
+    }
+
+    public List<Grupo> listarGrupos() {
+        try {
+            Response resp = client.target(baseUrl).path("/Grupos")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            if (resp.getStatus() == 200) {
+                return resp.readEntity(new GenericType<List<Grupo>>() {});
+            }
+            LOG.warning("API de grupos respondio codigo " + resp.getStatus());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (grupos)", e);
+        }
+        return usarMockSiFalla ? datosEjemploGrupos() : new ArrayList<>();
+    }
+
+    public List<Sede> listarSedes() {
+        try {
+            Response resp = client.target(baseUrl).path("/Sedes")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            if (resp.getStatus() == 200) {
+                return resp.readEntity(new GenericType<List<Sede>>() {});
+            }
+            LOG.warning("API de sedes respondio codigo " + resp.getStatus());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (sedes)", e);
+        }
+        return usarMockSiFalla ? datosEjemploSedes() : new ArrayList<>();
+    }
+
     // ---------------------------------------------------------------
     // USUARIOS (RF23, RF25)
     // ---------------------------------------------------------------
@@ -185,6 +265,25 @@ public class EstadisticasApiClient {
             LOG.log(Level.WARNING, "No se pudo actualizar el rol en la API (modo mock)", e);
             return usarMockSiFalla;
         }
+    }
+
+    // ---------------------------------------------------------------
+    // AUDITORIA (RF24)
+    // ---------------------------------------------------------------
+
+    public List<Auditoria> listarAuditorias() {
+        try {
+            Response resp = client.target(baseUrl).path("/Auditorias")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            if (resp.getStatus() == 200) {
+                return resp.readEntity(new GenericType<List<Auditoria>>() {});
+            }
+            LOG.warning("API de auditorias respondio codigo " + resp.getStatus());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (auditorias)", e);
+        }
+        return usarMockSiFalla ? datosEjemploAuditorias() : new ArrayList<>();
     }
 
     // ---------------------------------------------------------------
@@ -290,6 +389,62 @@ public class EstadisticasApiClient {
         lista.add(new Seleccion(5L, "Brasil", "C", "br"));
         lista.add(new Seleccion(6L, "Polonia", "A", "pl"));
         return lista;
+    }
+
+    private List<Fase> datosEjemploFases() {
+        List<Fase> lista = new ArrayList<>();
+        lista.add(new Fase("GRUPOS", "Fase de grupos", 1));
+        lista.add(new Fase("OCTAVOS", "Octavos de final", 2));
+        lista.add(new Fase("CUARTOS", "Cuartos de final", 3));
+        lista.add(new Fase("SEMIS", "Semifinal", 4));
+        lista.add(new Fase("FINAL", "Final", 5));
+        return lista;
+    }
+
+    private List<Grupo> datosEjemploGrupos() {
+        List<Grupo> lista = new ArrayList<>();
+        lista.add(new Grupo("A", "Grupo A"));
+        lista.add(new Grupo("B", "Grupo B"));
+        lista.add(new Grupo("C", "Grupo C"));
+        lista.add(new Grupo("D", "Grupo D"));
+        return lista;
+    }
+
+    private List<Sede> datosEjemploSedes() {
+        List<Sede> lista = new ArrayList<>();
+        lista.add(new Sede(1L, "Estadio Azteca", "Ciudad de Mexico", "MEX"));
+        lista.add(new Sede(2L, "AT&T Stadium", "Dallas", "USA"));
+        lista.add(new Sede(3L, "BMO Field", "Toronto", "CAN"));
+        return lista;
+    }
+
+    private List<Auditoria> datosEjemploAuditorias() {
+        List<Auditoria> lista = new ArrayList<>();
+        lista.add(crearAuditoriaEjemplo(1L, "Partidos", 3, "ACTUALIZAR",
+                "{\"golesLocal\":null,\"golesVisitante\":null}", "{\"golesLocal\":2,\"golesVisitante\":0}",
+                java.time.LocalDateTime.of(2026, 6, 13, 20, 5), 1));
+        lista.add(crearAuditoriaEjemplo(2L, "Usuarios", 2, "ACTUALIZAR",
+                "{\"rolNombre\":\"USUARIO\"}", "{\"rolNombre\":\"ADMINISTRADOR\"}",
+                java.time.LocalDateTime.of(2026, 6, 12, 9, 30), 1));
+        lista.add(crearAuditoriaEjemplo(3L, "Partidos", 5, "CREAR",
+                null, "{\"numeroPartidoFifa\":5,\"faseCodigo\":\"GRUPOS\"}",
+                java.time.LocalDateTime.of(2026, 6, 10, 14, 0), 1));
+        return lista;
+    }
+
+    private Auditoria crearAuditoriaEjemplo(Long id, String tabla, int registroId, String accion,
+                                             String datosAnteriores, String datosNuevos,
+                                             java.time.LocalDateTime fecha, int usuarioId) {
+        Auditoria a = new Auditoria();
+        a.setId(id);
+        a.setTablaAfectada(tabla);
+        a.setRegistroId(registroId);
+        a.setTipoAccionAuditoria(accion);
+        a.setDatosAnteriores(datosAnteriores);
+        a.setDatosNuevos(datosNuevos);
+        a.setFecha(fecha);
+        a.setUsuarioId(usuarioId);
+        return a;
     }
 
     private List<Usuario> datosEjemploUsuarios() {

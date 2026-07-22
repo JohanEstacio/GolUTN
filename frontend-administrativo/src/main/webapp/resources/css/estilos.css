@@ -458,6 +458,13 @@ textarea:focus-visible,
     background: linear-gradient(135deg, transparent 44%, currentColor 45% 53%, transparent 54%);
 }
 
+.panel-menu .menu-auditoria::before {
+    border-radius: 3px;
+    box-shadow:
+        inset 0 -4px 0 -1px currentColor,
+        inset 0 4px 0 -1px currentColor;
+}
+
 .panel-menu a:hover,
 .panel-menu a.activo {
     border-color: rgba(255, 255, 255, 0.08);
@@ -971,6 +978,12 @@ textarea:focus-visible,
     box-shadow: var(--gol-sombra);
 }
 
+.acciones-tabla {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 16px 0;
+}
+
 .tabla-administrativa.ui-datatable {
     border: 0;
 }
@@ -1189,6 +1202,30 @@ textarea:focus-visible,
     text-align: right;
 }
 
+.bloque-detalle-json {
+    margin-top: 16px;
+}
+
+.bloque-detalle-json .etiqueta-campo {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.bloque-json {
+    max-height: 220px;
+    margin: 0;
+    padding: 12px 14px;
+    overflow: auto;
+    border: 1px solid var(--gol-gris-borde);
+    border-radius: 8px;
+    background: var(--gol-gris-fondo);
+    color: var(--gol-texto);
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.76rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 /* ---------- Adaptación responsive ---------- */
 @media (max-width: 1024px) {
     :root {
@@ -1245,7 +1282,7 @@ textarea:focus-visible,
         width: 100%;
         height: auto;
         display: grid;
-        grid-template-columns: repeat(4, minmax(78px, 1fr));
+        grid-template-columns: repeat(5, minmax(78px, 1fr));
         padding: 7px 8px;
         overflow-x: auto;
         border: 0;
