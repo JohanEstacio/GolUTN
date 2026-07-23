@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,9 +113,9 @@ public class UtnGolCoinApiClient {
 
     private List<Billetera> datosEjemploBilleteras() {
         List<Billetera> lista = new ArrayList<>();
-        lista.add(new Billetera(1L, 1L, "admin", 120.0));
-        lista.add(new Billetera(2L, 2L, "ana.torres", 0.0));
-        lista.add(new Billetera(3L, 3L, "luis.perez", 0.0));
+        lista.add(new Billetera(1L, 1L, "admin", new BigDecimal("120.00")));
+        lista.add(new Billetera(2L, 2L, "ana.torres", new BigDecimal("0.00")));
+        lista.add(new Billetera(3L, 3L, "luis.perez", new BigDecimal("0.00")));
         return lista;
     }
 }

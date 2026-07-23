@@ -1,6 +1,7 @@
 package ec.edu.utn.golutn.admin.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /** Billetera de UTNGolCoin de un usuario (RF20: bono anti-bancarrota). */
 public class Billetera implements Serializable {
@@ -8,12 +9,12 @@ public class Billetera implements Serializable {
     private Long billeteraId;
     private Long usuarioId;
     private String username;
-    private double saldo;
+    private BigDecimal saldo;
 
     public Billetera() {
     }
 
-    public Billetera(Long billeteraId, Long usuarioId, String username, double saldo) {
+    public Billetera(Long billeteraId, Long usuarioId, String username, BigDecimal saldo) {
         this.billeteraId = billeteraId;
         this.usuarioId = usuarioId;
         this.username = username;
@@ -29,6 +30,8 @@ public class Billetera implements Serializable {
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
-    public double getSaldo() { return saldo; }
-    public void setSaldo(double saldo) { this.saldo = saldo; }
+    public BigDecimal getSaldo() { return saldo; }
+    public void setSaldo(BigDecimal saldo) { this.saldo = saldo; }
+
+    public boolean isEnCero() { return saldo.compareTo(BigDecimal.ZERO) <= 0; }
 }

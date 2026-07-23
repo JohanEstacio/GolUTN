@@ -6,6 +6,7 @@
                 template="/WEB-INF/templates/layout.xhtml">
 
     <ui:param name="titulo" value="Simulacion bono" />
+    <ui:param name="seccion" value="simulacion" />
 
     <ui:define name="contenido">
         <header class="encabezado-pagina">
@@ -77,8 +78,8 @@
                         <h:outputText value="#{b.saldo}" />
                     </p:column>
                     <p:column headerText="Estado">
-                        <span class="estado-tag #{b.saldo == 0 ? 'estado-error' : 'estado-activo'}">
-                            #{b.saldo == 0 ? 'Saldo en cero' : 'Con saldo'}
+                        <span class="estado-tag #{b.enCero ? 'estado-error' : 'estado-activo'}">
+                            #{b.enCero ? 'Saldo en cero' : 'Con saldo'}
                         </span>
                     </p:column>
                 </p:dataTable>

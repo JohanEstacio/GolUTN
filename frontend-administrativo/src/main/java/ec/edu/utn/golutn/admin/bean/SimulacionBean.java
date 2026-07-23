@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class SimulacionBean implements Serializable {
         fechaSimulada = fechaSimulada.plusDays(1);
         diasAvanzados++;
 
-        Map<Long, Double> saldosPrevios = new HashMap<>();
+        Map<Long, BigDecimal> saldosPrevios = new HashMap<>();
         for (Billetera b : enCero) {
             saldosPrevios.put(b.getBilleteraId(), b.getSaldo());
             apiClient.otorgarBonoDiario(b.getUsuarioId(), fechaSimulada);
@@ -73,8 +74,8 @@ public class SimulacionBean implements Serializable {
 
         int acreditados = 0;
         for (Billetera actual : billeteras) {
-            Double previo = saldosPrevios.get(actual.getBilleteraId());
-            if (previo != null && actual.getSaldo() > previo) {
+            BigDecimal previo = saldosPrevios.get(actual.getBilleteraId());
+            if (previo != null && actual.getSaldo().compareTo(previo) > 0) {
                 acreditados++;
             }
         }
@@ -107,7 +108,7 @@ public class SimulacionBean implements Serializable {
     public List<Billetera> billeterasEnCero() {
         List<Billetera> lista = new ArrayList<>();
         for (Billetera b : billeteras) {
-            if (b.getSaldo() == 0) {
+            if (b.isEnCero()) {
                 lista.add(b);
             }
         }

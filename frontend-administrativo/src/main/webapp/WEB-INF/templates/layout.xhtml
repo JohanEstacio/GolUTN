@@ -31,17 +31,17 @@
             <nav class="panel-menu" aria-label="Navegación principal">
                 <div class="menu-encabezado">Gestión del torneo</div>
                 <h:link outcome="/panel/dashboard" value="Inicio"
-                        styleClass="menu-inicio #{titulo eq 'Inicio' ? 'activo' : ''}" />
+                        styleClass="menu-inicio #{seccion eq 'inicio' ? 'activo' : ''}" />
                 <h:link outcome="/panel/partidos" value="Gestión de partidos"
-                        styleClass="menu-partidos #{titulo eq 'Gestion de partidos' ? 'activo' : ''}" />
+                        styleClass="menu-partidos #{seccion eq 'partidos' ? 'activo' : ''}" />
                 <h:link outcome="/panel/usuarios" value="Gestión de usuarios"
-                        styleClass="menu-usuarios #{titulo eq 'Gestion de usuarios' ? 'activo' : ''}" />
+                        styleClass="menu-usuarios #{seccion eq 'usuarios' ? 'activo' : ''}" />
                 <h:link outcome="/panel/reportes" value="Reportes y auditoría"
-                        styleClass="menu-reportes #{titulo eq 'Reportes' ? 'activo' : ''}" />
+                        styleClass="menu-reportes #{seccion eq 'reportes' ? 'activo' : ''}" />
                 <h:link outcome="/panel/auditoria" value="Auditoría"
-                        styleClass="menu-auditoria #{titulo eq 'Auditoria' ? 'activo' : ''}" />
+                        styleClass="menu-auditoria #{seccion eq 'auditoria' ? 'activo' : ''}" />
                 <h:link outcome="/panel/simulacion" value="Bono anti-bancarrota"
-                        styleClass="menu-simulacion #{titulo eq 'Simulacion bono' ? 'activo' : ''}" />
+                        styleClass="menu-simulacion #{seccion eq 'simulacion' ? 'activo' : ''}" />
                 <div class="menu-pie">
                     <span class="indicador-sistema"></span>
                     Sistema administrativo
