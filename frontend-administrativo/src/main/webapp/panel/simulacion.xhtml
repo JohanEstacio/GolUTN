@@ -1,0 +1,88 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Simulacion bono" />
+
+    <ui:define name="contenido">
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Demostración</span>
+                <h1>Simulación del bono anti-bancarrota</h1>
+                <p>Avanza días simulados para demostrar el bono anti-bancarrota sin esperar días reales (RF20).</p>
+            </div>
+            <span class="insignia-edicion insignia-dorada">
+                Día simulado:
+                <h:outputText value="#{simulacionBean.fechaSimulada}">
+                    <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                </h:outputText>
+                (día #{simulacionBean.diasAvanzados} de simulación)
+            </span>
+        </header>
+
+        <h:form id="formSimulacion">
+            <p:panel header="Última simulación" styleClass="panel-seccion"
+                     rendered="#{simulacionBean.ultimoEnCero != null}">
+                <div class="resumen-simulacion">
+                    <div class="dato">
+                        <span class="valor">#{simulacionBean.ultimoEnCero}</span>
+                        <span class="etiqueta">En cero antes de simular</span>
+                    </div>
+                    <div class="dato">
+                        <span class="valor">#{simulacionBean.ultimoAcreditados}</span>
+                        <span class="etiqueta">Acreditadas</span>
+                    </div>
+                    <div class="dato">
+                        <span class="valor">#{simulacionBean.ultimoSinCambios}</span>
+                        <span class="etiqueta">Sin cambios</span>
+                    </div>
+                </div>
+            </p:panel>
+
+            <div class="acciones-simulacion">
+                <p:commandButton id="btnSimular" value="Simular nuevo día" icon="pi pi-forward"
+                                 disabled="#{not simulacionBean.hayBilleterasEnCero}"
+                                 update=":formSimulacion" styleClass="boton-principal">
+                    <p:confirm header="Confirmar simulación" icon="pi pi-exclamation-triangle"
+                               message="Se acreditará 1 UTNGolCoin a cada billetera con saldo cero y la fecha simulada avanzará un día. ¿Deseas continuar?" />
+                </p:commandButton>
+                <p:commandButton value="Reiniciar simulación" icon="pi pi-refresh"
+                                 action="#{simulacionBean.reiniciarSimulacion}"
+                                 update=":formSimulacion" styleClass="boton-compacto" />
+                <span class="texto-ayuda" rendered="#{not simulacionBean.hayBilleterasEnCero}">
+                    Ninguna billetera tiene saldo cero: no hay nada que acreditar todavía.
+                </span>
+            </div>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true">
+                <p:commandButton value="Sí, simular" icon="pi pi-check" action="#{simulacionBean.simularNuevoDia}"
+                                 update=":formSimulacion" styleClass="boton-principal" />
+                <p:commandButton value="Cancelar" icon="pi pi-times" type="button"
+                                 onclick="PF('confirmDialogGlobal').hide()" styleClass="boton-compacto" />
+            </p:confirmDialog>
+
+            <div class="contenedor-tabla">
+                <p:dataTable id="tablaBilleteras" var="b" value="#{simulacionBean.billeteras}"
+                             emptyMessage="No hay billeteras disponibles en este momento. Verifica la conexión con el Servicio UTNGolCoin."
+                             paginator="true" rows="10" reflow="true"
+                             styleClass="tabla-administrativa tabla-billeteras">
+
+                    <p:column headerText="Usuario">
+                        <h:outputText value="#{b.username}" />
+                    </p:column>
+                    <p:column headerText="Saldo (UTNGolCoin)">
+                        <h:outputText value="#{b.saldo}" />
+                    </p:column>
+                    <p:column headerText="Estado">
+                        <span class="estado-tag #{b.saldo == 0 ? 'estado-error' : 'estado-activo'}">
+                            #{b.saldo == 0 ? 'Saldo en cero' : 'Con saldo'}
+                        </span>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1202,6 +1202,41 @@ textarea:focus-visible,
     text-align: right;
 }
 
+.acciones-simulacion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.texto-ayuda {
+    color: var(--gol-texto-suave);
+    font-size: 0.85rem;
+}
+
+.resumen-simulacion {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.resumen-simulacion .dato {
+    display: flex;
+    flex-direction: column;
+}
+
+.resumen-simulacion .dato .valor {
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.resumen-simulacion .dato .etiqueta {
+    color: var(--gol-texto-suave);
+    font-size: 0.8rem;
+}
+
 .bloque-detalle-json {
     margin-top: 16px;
 }

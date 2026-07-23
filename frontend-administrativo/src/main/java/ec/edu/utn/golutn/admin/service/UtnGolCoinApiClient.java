@@ -1,5 +1,7 @@
 package ec.edu.utn.golutn.admin.service;
 
+import ec.edu.utn.golutn.admin.dto.BonoDiarioRequestDto;
+import ec.edu.utn.golutn.admin.model.Billetera;
 import ec.edu.utn.golutn.admin.model.ReporteResumen;
 
 import jakarta.annotation.PostConstruct;
@@ -7,9 +9,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,5 +72,49 @@ public class UtnGolCoinApiClient {
                 4,
                 1
         );
+    }
+
+    // ---------------------------------------------------------------
+    // BONO ANTI-BANCARROTA (RF20, CP11)
+    // ---------------------------------------------------------------
+
+    public List<Billetera> listarBilleteras() {
+        try {
+            Response resp = client.target(baseUrl).path("/billeteras")
+                    .request(MediaType.APPLICATION_JSON)
+                    .get();
+            if (resp.getStatus() == 200) {
+                return resp.readEntity(new GenericType<List<Billetera>>() {});
+            }
+            LOG.warning("API de billeteras respondio codigo " + resp.getStatus());
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo conectar al Servicio UTNGolCoin (billeteras), usando datos de ejemplo", e);
+        }
+        return usarMockSiFalla ? datosEjemploBilleteras() : new ArrayList<>();
+    }
+
+    /**
+     * El procedimiento almacenado del backend responde 200 aunque no haya
+     * acreditado nada, asi que este resultado solo indica que la llamada
+     * se completo, no que el bono se haya otorgado realmente.
+     */
+    public boolean otorgarBonoDiario(Long usuarioId, LocalDate fecha) {
+        try {
+            Response resp = client.target(baseUrl).path("/bonos/otorgar")
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(new BonoDiarioRequestDto(usuarioId, fecha)));
+            return resp.getStatus() == 200 || resp.getStatus() == 201 || resp.getStatus() == 204;
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo otorgar el bono diario en la API (modo mock)", e);
+            return usarMockSiFalla;
+        }
+    }
+
+    private List<Billetera> datosEjemploBilleteras() {
+        List<Billetera> lista = new ArrayList<>();
+        lista.add(new Billetera(1L, 1L, "admin", 120.0));
+        lista.add(new Billetera(2L, 2L, "ana.torres", 0.0));
+        lista.add(new Billetera(3L, 3L, "luis.perez", 0.0));
+        return lista;
     }
 }
