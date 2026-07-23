@@ -1,8 +1,12 @@
 package ec.edu.utn.golutn.admin.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ec.edu.utn.golutn.admin.dto.LoginRequestDto;
 import ec.edu.utn.golutn.admin.dto.PartidoRequestDto;
 import ec.edu.utn.golutn.admin.dto.ResultadoRequestDto;
+import ec.edu.utn.golutn.admin.dto.SeleccionRequestDto;
 import ec.edu.utn.golutn.admin.model.Auditoria;
 import ec.edu.utn.golutn.admin.model.Fase;
 import ec.edu.utn.golutn.admin.model.Grupo;
@@ -41,6 +45,7 @@ import java.util.logging.Logger;
 public class EstadisticasApiClient {
 
     private static final Logger LOG = Logger.getLogger(EstadisticasApiClient.class.getName());
+    private static final ObjectMapper ERROR_MAPPER = new ObjectMapper();
 
     private Client client;
     private String baseUrl;
@@ -112,34 +117,58 @@ public class EstadisticasApiClient {
         }
     }
 
-    public boolean crearPartido(PartidoRequestDto datos) {
+    public ResultadoOperacion crearPartido(PartidoRequestDto datos) {
         try {
             Response resp = client.target(baseUrl).path("/Partidos")
                     .request(MediaType.APPLICATION_JSON)
                     .post(Entity.json(datos));
-            return resp.getStatus() == 200 || resp.getStatus() == 201;
+            int status = resp.getStatus();
+            if (status == 200 || status == 201) {
+                return new ResultadoOperacion(true, status, null);
+            }
+            String cuerpo = resp.readEntity(String.class);
+            LOG.warning("API de creacion de partido respondio codigo " + status + " - cuerpo: " + cuerpo);
+            return new ResultadoOperacion(false, status, extraerMensajeError(cuerpo));
         } catch (Exception e) {
             LOG.log(Level.WARNING, "No se pudo crear el partido en la API (modo mock)", e);
-            return usarMockSiFalla;
+            return new ResultadoOperacion(usarMockSiFalla, 0, e.getMessage());
         }
     }
 
-    public boolean actualizarPartido(Long partidoId, PartidoRequestDto datos) {
+    public ResultadoOperacion actualizarPartido(Long partidoId, PartidoRequestDto datos) {
         try {
             Response resp = client.target(baseUrl).path("/Partidos/" + partidoId)
                     .request(MediaType.APPLICATION_JSON)
                     .put(Entity.json(datos));
-            if (resp.getStatus() >= 200 && resp.getStatus() < 300) {
-                return true;
+            int status = resp.getStatus();
+            if (status >= 200 && status < 300) {
+                return new ResultadoOperacion(true, status, null);
             }
             String cuerpo = resp.readEntity(String.class);
-            LOG.warning("API de actualizacion de partido respondio codigo " + resp.getStatus()
+            LOG.warning("API de actualizacion de partido respondio codigo " + status
                     + " - cuerpo: " + cuerpo);
-            return false;
+            return new ResultadoOperacion(false, status, extraerMensajeError(cuerpo));
         } catch (Exception e) {
             LOG.log(Level.WARNING, "No se pudo actualizar el partido en la API (modo mock)", e);
-            return usarMockSiFalla;
+            return new ResultadoOperacion(usarMockSiFalla, 0, e.getMessage());
         }
+    }
+
+    /** El Servicio de Estadisticas informa el motivo de un 400 en un campo "mensaje" del cuerpo JSON. */
+    private String extraerMensajeError(String cuerpo) {
+        if (cuerpo == null || cuerpo.isBlank()) {
+            return null;
+        }
+        try {
+            JsonNode nodo = ERROR_MAPPER.readTree(cuerpo);
+            JsonNode mensaje = nodo.get("mensaje");
+            if (mensaje != null && mensaje.isTextual()) {
+                return mensaje.asText();
+            }
+        } catch (Exception e) {
+            LOG.log(Level.FINE, "El cuerpo de la respuesta de error no es JSON valido", e);
+        }
+        return cuerpo;
     }
 
     // ---------------------------------------------------------------
@@ -158,6 +187,44 @@ public class EstadisticasApiClient {
             LOG.log(Level.WARNING, "No se pudo conectar al Servicio de Estadisticas (selecciones)", e);
         }
         return usarMockSiFalla ? datosEjemploSelecciones() : new ArrayList<>();
+    }
+
+    public ResultadoOperacion crearSeleccion(SeleccionRequestDto datos) {
+        try {
+            Response resp = client.target(baseUrl).path("/Selecciones")
+                    .request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(datos));
+            int status = resp.getStatus();
+            if (status == 200 || status == 201) {
+                return new ResultadoOperacion(true, status, null);
+            }
+            String cuerpo = resp.readEntity(String.class);
+            LOG.warning("API de creacion de seleccion respondio codigo " + status + " - cuerpo: " + cuerpo);
+            return new ResultadoOperacion(false, status, extraerMensajeError(cuerpo));
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo crear la seleccion en la API (modo mock)", e);
+            return new ResultadoOperacion(usarMockSiFalla, 0, e.getMessage());
+        }
+    }
+
+    /** El PUT del backend valida que el id de la URL coincida con el del cuerpo. */
+    public ResultadoOperacion actualizarSeleccion(Integer id, SeleccionRequestDto datos) {
+        datos.setId(id);
+        try {
+            Response resp = client.target(baseUrl).path("/Selecciones/" + id)
+                    .request(MediaType.APPLICATION_JSON)
+                    .put(Entity.json(datos));
+            int status = resp.getStatus();
+            if (status >= 200 && status < 300) {
+                return new ResultadoOperacion(true, status, null);
+            }
+            String cuerpo = resp.readEntity(String.class);
+            LOG.warning("API de actualizacion de seleccion respondio codigo " + status + " - cuerpo: " + cuerpo);
+            return new ResultadoOperacion(false, status, extraerMensajeError(cuerpo));
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "No se pudo actualizar la seleccion en la API (modo mock)", e);
+            return new ResultadoOperacion(usarMockSiFalla, 0, e.getMessage());
+        }
     }
 
     /** Lanza RuntimeException si la API no responde, para que el llamador pueda distinguir "0" de "no se pudo consultar". */
@@ -382,12 +449,12 @@ public class EstadisticasApiClient {
 
     private List<Seleccion> datosEjemploSelecciones() {
         List<Seleccion> lista = new ArrayList<>();
-        lista.add(new Seleccion(1L, "Mexico", "A", "mx"));
-        lista.add(new Seleccion(2L, "Estados Unidos", "D", "us"));
-        lista.add(new Seleccion(3L, "Canada", "B", "ca"));
-        lista.add(new Seleccion(4L, "Argentina", "B", "ar"));
-        lista.add(new Seleccion(5L, "Brasil", "C", "br"));
-        lista.add(new Seleccion(6L, "Polonia", "A", "pl"));
+        lista.add(new Seleccion(1, "MEX", "Mexico", "CONCACAF", true, "Clasificado", false, "A"));
+        lista.add(new Seleccion(2, "USA", "Estados Unidos", "CONCACAF", true, "Clasificado", false, "D"));
+        lista.add(new Seleccion(3, "CAN", "Canada", "CONCACAF", true, "Clasificado", false, "B"));
+        lista.add(new Seleccion(4, "ARG", "Argentina", "CONMEBOL", false, "Clasificado", false, "B"));
+        lista.add(new Seleccion(5, "BRA", "Brasil", "CONMEBOL", false, "Clasificado", false, "C"));
+        lista.add(new Seleccion(6, "POL", "Polonia", "UEFA", false, "Clasificado", false, "A"));
         return lista;
     }
 

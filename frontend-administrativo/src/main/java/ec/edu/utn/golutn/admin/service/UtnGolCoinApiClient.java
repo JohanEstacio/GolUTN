@@ -99,11 +99,11 @@ public class UtnGolCoinApiClient {
      * acreditado nada, asi que este resultado solo indica que la llamada
      * se completo, no que el bono se haya otorgado realmente.
      */
-    public boolean otorgarBonoDiario(Long usuarioId, LocalDate fecha) {
+    public boolean otorgarBonoDiario(Long usuarioId, LocalDate fechaSimulada) {
         try {
             Response resp = client.target(baseUrl).path("/bonos/otorgar")
                     .request(MediaType.APPLICATION_JSON)
-                    .post(Entity.json(new BonoDiarioRequestDto(usuarioId, fecha)));
+                    .post(Entity.json(new BonoDiarioRequestDto(usuarioId, fechaSimulada)));
             return resp.getStatus() == 200 || resp.getStatus() == 201 || resp.getStatus() == 204;
         } catch (Exception e) {
             LOG.log(Level.WARNING, "No se pudo otorgar el bono diario en la API (modo mock)", e);

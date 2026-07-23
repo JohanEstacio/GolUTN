@@ -1002,6 +1002,10 @@ textarea:focus-visible,
     min-width: 1120px;
 }
 
+.tabla-selecciones table {
+    min-width: 1120px;
+}
+
 .tabla-administrativa thead th {
     padding: 13px 14px !important;
     border-width: 0 0 1px !important;

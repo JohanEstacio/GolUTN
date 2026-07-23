@@ -47,7 +47,7 @@
     <!-- URL base del Servicio UTNGolCoin (para reportes de monedas en circulacion) -->
     <context-param>
         <param-name>UTNGOLCOIN_API_URL</param-name>
-        <param-value>http://10.116.216.195:8080/UTNGolCoin/api</param-value>
+        <param-value>http://10.82.26.61:8080/UTNGolCoin/api</param-value>
     </context-param>
 
     <!-- Si el backend no responde, la app sigue funcionando con datos de ejemplo (mock) -->

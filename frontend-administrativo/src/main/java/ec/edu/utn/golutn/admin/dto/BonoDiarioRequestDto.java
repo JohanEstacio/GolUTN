@@ -7,19 +7,19 @@ import java.time.LocalDate;
 public class BonoDiarioRequestDto implements Serializable {
 
     private Long usuarioId;
-    private LocalDate fecha;
+    private LocalDate fechaSimulada;
 
     public BonoDiarioRequestDto() {
     }
 
-    public BonoDiarioRequestDto(Long usuarioId, LocalDate fecha) {
+    public BonoDiarioRequestDto(Long usuarioId, LocalDate fechaSimulada) {
         this.usuarioId = usuarioId;
-        this.fecha = fecha;
+        this.fechaSimulada = fechaSimulada;
     }
 
     public Long getUsuarioId() { return usuarioId; }
     public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
 
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
+    public LocalDate getFechaSimulada() { return fechaSimulada; }
+    public void setFechaSimulada(LocalDate fechaSimulada) { this.fechaSimulada = fechaSimulada; }
 }

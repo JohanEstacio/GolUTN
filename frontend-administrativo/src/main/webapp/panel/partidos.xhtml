@@ -5,7 +5,7 @@
                 xmlns:f="jakarta.faces.core"
                 template="/WEB-INF/templates/layout.xhtml">
 
-    <ui:param name="titulo" value="Gestion de partidos" />
+    <ui:param name="titulo" value="Gestión de partidos" />
     <ui:param name="seccion" value="partidos" />
 
     <ui:define name="contenido">
@@ -88,8 +88,8 @@
                     </p:selectOneMenu>
 
                     <h:outputText value="Grupo:" styleClass="etiqueta-campo" />
-                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.grupoCodigo}">
-                        <f:selectItem itemLabel="Sin grupo" itemValue="" noSelectionOption="true" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.grupoCodigo}" required="false">
+                        <f:selectItem itemLabel="— Sin grupo —" itemValue="#{null}" noSelectionOption="true" />
                         <f:selectItems value="#{partidosBean.grupos}" var="grupo"
                                        itemLabel="#{grupo.nombre}" itemValue="#{grupo.codigo}" />
                     </p:selectOneMenu>
@@ -120,7 +120,8 @@
                                   pattern="dd/MM/yyyy HH:mm" showTime="true" hourFormat="24" />
 
                     <h:outputText value="Estado:" styleClass="etiqueta-campo" />
-                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.estado}">
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.estado}"
+                                     disabled="#{partidosBean.partidoEnEdicion.estado eq 'FINALIZADO'}">
                         <f:selectItems value="#{partidosBean.estadosDisponibles}" />
                     </p:selectOneMenu>
                 </h:panelGrid>

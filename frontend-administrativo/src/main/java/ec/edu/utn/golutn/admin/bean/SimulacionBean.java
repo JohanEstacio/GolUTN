@@ -57,7 +57,7 @@ public class SimulacionBean implements Serializable {
         List<Billetera> enCero = billeterasEnCero();
         if (enCero.isEmpty()) {
             agregarMensaje(FacesMessage.SEVERITY_WARN, "No hay billeteras en cero",
-                    "Ninguna billetera tiene saldo cero, no se otorgo ningun bono.");
+                    "Ninguna billetera tiene saldo cero, no se otorgó ningún bono.");
             return;
         }
 
@@ -85,7 +85,7 @@ public class SimulacionBean implements Serializable {
         ultimoAcreditados = acreditados;
         ultimoSinCambios = sinCambios;
 
-        agregarMensaje(FacesMessage.SEVERITY_INFO, "Simulacion ejecutada",
+        agregarMensaje(FacesMessage.SEVERITY_INFO, "Simulación ejecutada",
                 ultimoEnCero + " billetera(s) en cero, " + acreditados + " acreditada(s) y "
                         + sinCambios + " sin cambios.");
     }
@@ -97,8 +97,8 @@ public class SimulacionBean implements Serializable {
         ultimoAcreditados = null;
         ultimoSinCambios = null;
         cargarBilleteras();
-        agregarMensaje(FacesMessage.SEVERITY_INFO, "Simulacion reiniciada",
-                "La fecha simulada volvio a la fecha real y se recargaron las billeteras.");
+        agregarMensaje(FacesMessage.SEVERITY_INFO, "Simulación reiniciada",
+                "La fecha simulada volvió a la fecha real y se recargaron las billeteras.");
     }
 
     private void agregarMensaje(FacesMessage.Severity severidad, String resumen, String detalle) {

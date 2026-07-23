@@ -1,9 +1,9 @@
-package ec.edu.utn.golutn.admin.model;
+package ec.edu.utn.golutn.admin.dto;
 
 import java.io.Serializable;
 
-/** Una de las 48 selecciones participantes en el torneo. */
-public class Seleccion implements Serializable {
+/** Cuerpo de POST /api/Selecciones y PUT /api/Selecciones/{id}. */
+public class SeleccionRequestDto implements Serializable {
 
     private Integer id;
     private String codigoFifa;
@@ -14,11 +14,11 @@ public class Seleccion implements Serializable {
     private boolean eliminada;
     private String grupoCodigo;
 
-    public Seleccion() {
+    public SeleccionRequestDto() {
     }
 
-    public Seleccion(Integer id, String codigoFifa, String nombre, String confederacion,
-                      boolean esAnfitrion, String clasificacion, boolean eliminada, String grupoCodigo) {
+    public SeleccionRequestDto(Integer id, String codigoFifa, String nombre, String confederacion,
+                                boolean esAnfitrion, String clasificacion, boolean eliminada, String grupoCodigo) {
         this.id = id;
         this.codigoFifa = codigoFifa;
         this.nombre = nombre;

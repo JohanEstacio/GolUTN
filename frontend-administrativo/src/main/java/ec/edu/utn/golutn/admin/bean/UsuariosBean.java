@@ -43,7 +43,7 @@ public class UsuariosBean implements Serializable {
                     "Rol actualizado", "El rol de " + usuario.getNombre() + " fue actualizado."));
         } else {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "No se pudo actualizar", "Revisa la conexion con el Servicio de Estadisticas."));
+                    "No se pudo actualizar", "Revisa la conexión con el Servicio de Estadísticas."));
         }
     }
 

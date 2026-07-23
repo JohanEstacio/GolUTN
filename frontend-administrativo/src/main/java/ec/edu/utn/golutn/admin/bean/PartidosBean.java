@@ -7,6 +7,7 @@ import ec.edu.utn.golutn.admin.model.Partido;
 import ec.edu.utn.golutn.admin.model.Sede;
 import ec.edu.utn.golutn.admin.model.Seleccion;
 import ec.edu.utn.golutn.admin.service.EstadisticasApiClient;
+import ec.edu.utn.golutn.admin.service.ResultadoOperacion;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -84,12 +85,12 @@ public class PartidosBean implements Serializable {
         if (ok) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
                     "Resultado registrado",
-                    "Se actualizo la tabla de posiciones y se liquidaron las predicciones."));
+                    "Se actualizó la tabla de posiciones y se liquidaron las predicciones."));
             cargarPartidos();
         } else {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "No se pudo registrar",
-                    "Intenta nuevamente o revisa la conexion con el Servicio de Estadisticas."));
+                    "Intenta nuevamente o revisa la conexión con el Servicio de Estadísticas."));
         }
     }
 
@@ -125,7 +126,7 @@ public class PartidosBean implements Serializable {
         if (partido.getEstado() == Partido.Estado.FINALIZADO) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
                     "Partido finalizado",
-                    "Este partido ya finalizo. Modificar sus datos puede afectar resultados y predicciones ya liquidadas."));
+                    "Este partido ya finalizó. Modificar sus datos puede afectar resultados y predicciones ya liquidadas."));
         }
     }
 
@@ -139,15 +140,15 @@ public class PartidosBean implements Serializable {
         if (partidoEnEdicion.getLocalId() == null || partidoEnEdicion.getVisitanteId() == null) {
             guardadoExitoso = false;
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Seleccion incompleta",
-                    "Debes seleccionar la seleccion local y la seleccion visitante."));
+                    "Selección incompleta",
+                    "Debes seleccionar la selección local y la selección visitante."));
             return;
         }
         if (partidoEnEdicion.getLocalId().equals(partidoEnEdicion.getVisitanteId())) {
             guardadoExitoso = false;
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Seleccion invalida",
-                    "La seleccion local y la visitante no pueden ser la misma."));
+                    "Selección inválida",
+                    "La selección local y la visitante no pueden ser la misma."));
             return;
         }
         if (partidoEnEdicion.getFechaPartido() == null) {
@@ -159,22 +160,32 @@ public class PartidosBean implements Serializable {
         }
 
         boolean esEdicion = partidoIdEnEdicion != null;
-        boolean ok = esEdicion
+        ResultadoOperacion resultado = esEdicion
                 ? apiClient.actualizarPartido(partidoIdEnEdicion, partidoEnEdicion)
                 : apiClient.crearPartido(partidoEnEdicion);
 
-        guardadoExitoso = ok;
-        if (ok) {
+        guardadoExitoso = resultado.isExito();
+        if (resultado.isExito()) {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO,
                     esEdicion ? "Partido actualizado" : "Partido creado",
                     esEdicion ? "Los datos del partido se guardaron correctamente."
-                              : "El partido se agrego al calendario correctamente."));
+                              : "El partido se agregó al calendario correctamente."));
             cargarPartidos();
         } else {
             fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "No se pudo guardar",
-                    "Intenta nuevamente o revisa la conexion con el Servicio de Estadisticas."));
+                    "No se pudo guardar", mensajeError(resultado)));
         }
+    }
+
+    private String mensajeError(ResultadoOperacion resultado) {
+        if (resultado.getCodigoHttp() == 0) {
+            return "No se pudo conectar con el Servicio de Estadísticas. Intenta nuevamente.";
+        }
+        String mensaje = resultado.getMensaje();
+        if (mensaje == null || mensaje.isBlank()) {
+            return "El servicio respondió con el código " + resultado.getCodigoHttp() + ".";
+        }
+        return mensaje;
     }
 
     public List<Partido> getPartidos() { return partidos; }
@@ -196,10 +207,11 @@ public class PartidosBean implements Serializable {
 
     public List<Sede> getSedes() { return sedes; }
 
+    /** FINALIZADO no se incluye: ese estado lo asigna el backend al liquidar un resultado (RF11). */
     public Partido.Estado[] getEstadosDisponibles() {
         return new Partido.Estado[] {
                 Partido.Estado.PROGRAMADO, Partido.Estado.EN_JUEGO,
-                Partido.Estado.FINALIZADO, Partido.Estado.SUSPENDIDO, Partido.Estado.CANCELADO
+                Partido.Estado.SUSPENDIDO, Partido.Estado.CANCELADO
         };
     }
 
