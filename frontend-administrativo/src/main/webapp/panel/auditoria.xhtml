@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Auditoría" />
+    <ui:param name="seccion" value="auditoria" />
+
+    <ui:define name="contenido">
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Trazabilidad</span>
+                <h1>Auditoría</h1>
+                <p>Consulta el historial de cambios registrados por el Servicio de Estadísticas.</p>
+            </div>
+        </header>
+
+        <h:form id="formAuditoria" styleClass="contenedor-tabla">
+            <div class="acciones-tabla acciones-actualizar">
+                <h:panelGroup id="ultimaActualizacion" layout="block" styleClass="ultima-actualizacion">
+                    Última actualización:
+                    <h:outputText value="#{auditoriaBean.ultimaActualizacion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" type="localDateTime" />
+                    </h:outputText>
+                </h:panelGroup>
+                <p:commandButton value="Actualizar" icon="pi pi-refresh"
+                                 actionListener="#{auditoriaBean.recargar}"
+                                 update=":formAuditoria:tablaAuditoria :formAuditoria:ultimaActualizacion"
+                                 styleClass="boton-principal" />
+            </div>
+
+            <p:dataTable id="tablaAuditoria" var="a" value="#{auditoriaBean.auditorias}"
+                         emptyMessage="No hay registros de auditoría disponibles en este momento."
+                         paginator="true" rows="10" reflow="true"
+                         sortBy="#{a.fecha}" sortOrder="descending"
+                         styleClass="tabla-administrativa tabla-auditoria">
+
+                <p:column headerText="Fecha">
+                    <h:outputText value="#{a.fecha}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" type="localDateTime" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Usuario">
+                    <h:outputText value="#{a.usuarioId}" />
+                </p:column>
+                <p:column headerText="Acción">
+                    <h:outputText value="#{a.tipoAccionAuditoria}" />
+                </p:column>
+                <p:column headerText="Tabla afectada">
+                    <h:outputText value="#{a.tablaAfectada}" />
+                </p:column>
+                <p:column headerText="Registro">
+                    <h:outputText value="#{a.registroId}" />
+                </p:column>
+                <p:column headerText="Detalle">
+                    <p:commandButton value="Ver cambios"
+                                     actionListener="#{auditoriaBean.prepararDetalle(a)}"
+                                     update=":formAuditoria:dialogDetalleAuditoria"
+                                     oncomplete="PF('dlgDetalleAuditoria').show()"
+                                     styleClass="boton-compacto" />
+                </p:column>
+            </p:dataTable>
+
+            <!-- Dialogo de detalle de un registro de auditoria (RF24) -->
+            <p:dialog id="dialogDetalleAuditoria" header="Detalle de auditoría" widgetVar="dlgDetalleAuditoria"
+                      modal="true" width="560" responsive="true" styleClass="dialogo-auditoria">
+                <h:panelGrid columns="2" rendered="#{auditoriaBean.auditoriaSeleccionada != null}"
+                             styleClass="formulario-dialogo">
+                    <h:outputText value="Tabla afectada:" styleClass="etiqueta-campo" />
+                    <h:outputText value="#{auditoriaBean.auditoriaSeleccionada.tablaAfectada}" />
+
+                    <h:outputText value="Registro:" styleClass="etiqueta-campo" />
+                    <h:outputText value="#{auditoriaBean.auditoriaSeleccionada.registroId}" />
+
+                    <h:outputText value="Acción:" styleClass="etiqueta-campo" />
+                    <h:outputText value="#{auditoriaBean.auditoriaSeleccionada.tipoAccionAuditoria}" />
+
+                    <h:outputText value="Fecha:" styleClass="etiqueta-campo" />
+                    <h:outputText value="#{auditoriaBean.auditoriaSeleccionada.fecha}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" type="localDateTime" />
+                    </h:outputText>
+                </h:panelGrid>
+
+                <h:panelGroup layout="block" styleClass="bloque-detalle-json"
+                              rendered="#{auditoriaBean.auditoriaSeleccionada != null}">
+                    <span class="etiqueta-campo">Datos anteriores:</span>
+                    <pre class="bloque-json"><h:outputText value="#{auditoriaBean.datosAnterioresFormateados}" /></pre>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" styleClass="bloque-detalle-json"
+                              rendered="#{auditoriaBean.auditoriaSeleccionada != null}">
+                    <span class="etiqueta-campo">Datos nuevos:</span>
+                    <pre class="bloque-json"><h:outputText value="#{auditoriaBean.datosNuevosFormateados}" /></pre>
+                </h:panelGroup>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

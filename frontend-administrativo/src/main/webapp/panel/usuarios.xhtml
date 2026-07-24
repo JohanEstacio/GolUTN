@@ -1,0 +1,47 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Gestión de usuarios" />
+    <ui:param name="seccion" value="usuarios" />
+
+    <ui:define name="contenido">
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Administración</span>
+                <h1>Gestión de usuarios</h1>
+                <p>Administra las cuentas registradas, sus roles y su estado de acceso.</p>
+            </div>
+        </header>
+
+        <h:form id="formUsuarios" styleClass="contenedor-tabla">
+            <p:dataTable var="u" value="#{usuariosBean.usuarios}"
+                         emptyMessage="No hay usuarios cargados todavía."
+                         paginator="true" rows="10" reflow="true"
+                         styleClass="tabla-administrativa tabla-usuarios">
+
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{u.nombre}" />
+                </p:column>
+                <p:column headerText="Correo">
+                    <h:outputText value="#{u.email}" />
+                </p:column>
+                <p:column headerText="Rol">
+                    <p:selectOneMenu value="#{u.rolNombre}">
+                        <f:selectItems value="#{usuariosBean.rolesDisponibles}" />
+                    </p:selectOneMenu>
+                </p:column>
+                <p:column headerText="Activo">
+                    <p:selectBooleanCheckbox value="#{u.activo}" />
+                </p:column>
+                <p:column headerText="Acción">
+                    <p:commandButton value="Guardar" action="#{usuariosBean.cambiarRol(u)}"
+                                     update=":formUsuarios" styleClass="boton-compacto" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Reportes" />
+    <ui:param name="seccion" value="reportes" />
+
+    <ui:define name="contenido">
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Analítica</span>
+                <h1>Reportes y auditoría</h1>
+                <p>Indicadores operativos del torneo y de la moneda virtual UTNGolCoin.</p>
+            </div>
+            <span class="insignia-edicion insignia-dorada">Resumen general</span>
+        </header>
+
+        <h:form id="formReportes">
+            <div class="acciones-tabla acciones-actualizar">
+                <h:panelGroup id="ultimaActualizacion" layout="block" styleClass="ultima-actualizacion">
+                    Última actualización:
+                    <h:outputText value="#{reportesBean.ultimaActualizacion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" type="localDateTime" />
+                    </h:outputText>
+                </h:panelGroup>
+                <p:commandButton value="Actualizar" icon="pi pi-refresh"
+                                 actionListener="#{reportesBean.recargar}"
+                                 update=":formReportes:panelResumen :formReportes:ultimaActualizacion"
+                                 styleClass="boton-principal" />
+            </div>
+
+            <h:panelGroup id="panelResumen" layout="block">
+                <div class="tarjetas-resumen">
+                    <div class="tarjeta tarjeta-azul">
+                        <span class="tarjeta-icono icono-predicciones" aria-hidden="true"></span>
+                        <div class="tarjeta-datos">
+                            <div class="valor">#{reportesBean.resumen.totalPredicciones}</div>
+                            <div class="etiqueta">Predicciones totales</div>
+                        </div>
+                    </div>
+                    <div class="tarjeta tarjeta-dorada">
+                        <span class="tarjeta-icono icono-moneda" aria-hidden="true"></span>
+                        <div class="tarjeta-datos">
+                            <div class="valor">#{reportesBean.resumen.utnGolCoinEnCirculacion}</div>
+                            <div class="etiqueta">UTNGolCoin en circulación</div>
+                        </div>
+                    </div>
+                    <div class="tarjeta tarjeta-azul">
+                        <span class="tarjeta-icono icono-usuarios" aria-hidden="true"></span>
+                        <div class="tarjeta-datos">
+                            <div class="valor">#{reportesBean.resumen.usuariosRegistrados}</div>
+                            <div class="etiqueta">Usuarios registrados</div>
+                        </div>
+                    </div>
+                    <div class="tarjeta tarjeta-verde">
+                        <span class="tarjeta-icono icono-finalizados" aria-hidden="true"></span>
+                        <div class="tarjeta-datos">
+                            <div class="valor">#{reportesBean.resumen.partidosFinalizados}</div>
+                            <div class="etiqueta">Partidos finalizados</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p:panel header="Partido con más predicciones" styleClass="panel-seccion panel-destacado">
+                    <div class="dato-destacado">
+                        <span class="dato-destacado-icono" aria-hidden="true"></span>
+                        <h:outputText value="#{reportesBean.resumen.partidoMasPredicciones}" />
+                    </div>
+                </p:panel>
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>

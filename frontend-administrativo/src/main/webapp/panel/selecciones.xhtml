@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Selecciones" />
+    <ui:param name="seccion" value="selecciones" />
+
+    <ui:define name="contenido">
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Competición</span>
+                <h1>Selecciones</h1>
+                <p>Catálogo de las selecciones participantes: confederación, clasificación y grupo asignado.</p>
+            </div>
+        </header>
+
+        <h:form id="formSelecciones" styleClass="contenedor-tabla">
+            <div class="acciones-tabla">
+                <p:commandButton value="Nueva selección" icon="pi pi-plus"
+                                 actionListener="#{seleccionesBean.prepararNueva}"
+                                 update=":formSelecciones:dialogSeleccion" oncomplete="PF('dlgSeleccion').show()"
+                                 styleClass="boton-principal" />
+            </div>
+
+            <p:dataTable id="tablaSelecciones" var="s" value="#{seleccionesBean.selecciones}"
+                         emptyMessage="No hay selecciones cargadas todavía."
+                         paginator="true" rows="10" reflow="true"
+                         styleClass="tabla-administrativa tabla-selecciones">
+
+                <p:column headerText="Código FIFA">
+                    <h:outputText value="#{s.codigoFifa}" />
+                </p:column>
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{s.nombre}" />
+                </p:column>
+                <p:column headerText="Confederación">
+                    <h:outputText value="#{s.confederacion}" />
+                </p:column>
+                <p:column headerText="Anfitriona">
+                    <h:outputText value="#{s.esAnfitrion ? 'Sí' : 'No'}" />
+                </p:column>
+                <p:column headerText="Clasificación">
+                    <h:outputText value="#{s.clasificacion}" />
+                </p:column>
+                <p:column headerText="Grupo">
+                    <h:outputText value="#{s.grupoCodigo != null ? s.grupoCodigo : '— Sin grupo —'}" />
+                </p:column>
+                <p:column headerText="Estado">
+                    <span class="estado-tag #{s.eliminada ? 'estado-error' : 'estado-activo'}">
+                        #{s.eliminada ? 'Eliminada' : 'En competencia'}
+                    </span>
+                </p:column>
+                <p:column headerText="Acción">
+                    <p:commandButton value="Editar"
+                                     actionListener="#{seleccionesBean.prepararEdicion(s)}"
+                                     update=":formSelecciones:dialogSeleccion" oncomplete="PF('dlgSeleccion').show()"
+                                     styleClass="boton-compacto" />
+                </p:column>
+            </p:dataTable>
+
+            <!-- Dialogo para crear o editar una seleccion -->
+            <p:dialog id="dialogSeleccion" header="#{seleccionesBean.editando ? 'Editar selección' : 'Nueva selección'}"
+                      widgetVar="dlgSeleccion" modal="true" width="460" responsive="true" styleClass="dialogo-seleccion">
+                <p:messages id="mensajesSeleccion" showDetail="true" closable="true" />
+
+                <h:panelGrid columns="2" rendered="#{seleccionesBean.seleccionEnEdicion != null}"
+                             styleClass="formulario-dialogo">
+                    <h:outputText value="Código FIFA:" styleClass="etiqueta-campo" />
+                    <p:inputText value="#{seleccionesBean.seleccionEnEdicion.codigoFifa}" maxlength="10" />
+
+                    <h:outputText value="Nombre:" styleClass="etiqueta-campo" />
+                    <p:inputText value="#{seleccionesBean.seleccionEnEdicion.nombre}" />
+
+                    <h:outputText value="Confederación:" styleClass="etiqueta-campo" />
+                    <p:inputText value="#{seleccionesBean.seleccionEnEdicion.confederacion}" />
+
+                    <h:outputText value="Clasificación:" styleClass="etiqueta-campo" />
+                    <p:inputText value="#{seleccionesBean.seleccionEnEdicion.clasificacion}" />
+
+                    <h:outputText value="Grupo:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{seleccionesBean.seleccionEnEdicion.grupoCodigo}" required="false">
+                        <f:selectItem itemLabel="— Sin grupo —" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{seleccionesBean.grupos}" var="grupo"
+                                       itemLabel="#{grupo.nombre}" itemValue="#{grupo.codigo}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Anfitriona:" styleClass="etiqueta-campo" />
+                    <p:selectBooleanCheckbox value="#{seleccionesBean.seleccionEnEdicion.esAnfitrion}" />
+
+                    <h:outputText value="Eliminada:" styleClass="etiqueta-campo" />
+                    <p:selectBooleanCheckbox value="#{seleccionesBean.seleccionEnEdicion.eliminada}" />
+                </h:panelGrid>
+
+                <div class="acciones-dialogo">
+                    <p:commandButton value="Guardar selección" action="#{seleccionesBean.guardarSeleccion}"
+                                     update=":formSelecciones"
+                                     oncomplete="if (#{seleccionesBean.guardadoExitoso}) { PF('dlgSeleccion').hide(); }"
+                                     styleClass="boton-principal" />
+                </div>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

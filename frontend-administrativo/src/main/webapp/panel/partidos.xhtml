@@ -1,0 +1,163 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Gestión de partidos" />
+    <ui:param name="seccion" value="partidos" />
+
+    <ui:define name="contenido">
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Competición</span>
+                <h1>Gestión de partidos</h1>
+                <p>Consulta el calendario, crea o edita partidos y registra el resultado oficial de cada encuentro.</p>
+            </div>
+        </header>
+
+        <h:form id="formPartidos" styleClass="contenedor-tabla">
+            <div class="acciones-tabla">
+                <p:commandButton value="Nuevo partido" icon="pi pi-plus"
+                                 actionListener="#{partidosBean.prepararNuevo}"
+                                 update=":formPartidos:dialogPartido" oncomplete="PF('dlgPartido').show()"
+                                 styleClass="boton-principal" />
+            </div>
+
+            <p:dataTable id="tablaPartidos" var="p" value="#{partidosBean.partidos}"
+                         emptyMessage="No hay partidos cargados todavía."
+                         paginator="true" rows="10" reflow="true"
+                         styleClass="tabla-administrativa tabla-partidos">
+
+                <p:column headerText="Local">
+                    <h:outputText value="#{p.localNombre}" />
+                </p:column>
+                <p:column headerText="Visitante">
+                    <h:outputText value="#{p.visitanteNombre}" />
+                </p:column>
+                <p:column headerText="Sede">
+                    <h:outputText value="#{p.sedeNombre}" />
+                </p:column>
+                <p:column headerText="Fase">
+                    <h:outputText value="#{p.faseNombre}" />
+                </p:column>
+                <p:column headerText="Fecha y hora">
+                    <h:outputText value="#{p.fechaPartido}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" type="localDateTime" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Estado">
+                    <span class="estado-tag estado-#{p.estadoCss}">
+                        #{p.estado}
+                    </span>
+                </p:column>
+                <p:column headerText="Marcador">
+                    <h:outputText value="#{p.golesLocal} - #{p.golesVisitante}"
+                                  rendered="#{p.golesLocal != null}" />
+                    <h:outputText value="Sin jugar" rendered="#{p.golesLocal == null}" />
+                </p:column>
+                <p:column headerText="Acción">
+                    <p:commandButton value="Editar"
+                                     actionListener="#{partidosBean.prepararEdicion(p)}"
+                                     update=":formPartidos:dialogPartido" oncomplete="PF('dlgPartido').show()"
+                                     styleClass="boton-compacto" />
+                    <p:commandButton value="Registrar resultado"
+                                     actionListener="#{partidosBean.prepararRegistroResultado(p)}"
+                                     update=":formPartidos:dialogResultado" oncomplete="PF('dlgResultado').show()"
+                                     styleClass="boton-compacto" />
+                </p:column>
+            </p:dataTable>
+
+            <!-- Dialogo para crear o editar un partido (RF10, RNF10) -->
+            <p:dialog id="dialogPartido" header="#{partidosBean.editando ? 'Editar partido' : 'Nuevo partido'}"
+                      widgetVar="dlgPartido" modal="true" width="460" responsive="true" styleClass="dialogo-partido">
+                <p:messages id="mensajesPartido" showDetail="true" closable="true" autoUpdate="true" globalOnly="false" />
+
+                <h:panelGrid columns="2" rendered="#{partidosBean.partidoEnEdicion != null}"
+                             styleClass="formulario-dialogo">
+                    <h:outputText value="Número FIFA:" styleClass="etiqueta-campo" />
+                    <p:inputNumber value="#{partidosBean.partidoEnEdicion.numeroPartidoFifa}"
+                                   decimalPlaces="0" minValue="1" />
+
+                    <h:outputText value="Fase:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.faseCodigo}">
+                        <f:selectItem itemLabel="Selecciona una fase" itemValue="" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.fases}" var="fase"
+                                       itemLabel="#{fase.nombre}" itemValue="#{fase.codigo}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Grupo:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.grupoCodigo}" required="false">
+                        <f:selectItem itemLabel="— Sin grupo —" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.grupos}" var="grupo"
+                                       itemLabel="#{grupo.nombre}" itemValue="#{grupo.codigo}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Sede:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.sedeId}">
+                        <f:selectItem itemLabel="Selecciona una sede" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.sedes}" var="sede"
+                                       itemLabel="#{sede.nombre} - #{sede.ciudad}" itemValue="#{sede.id}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Selección local:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.localId}">
+                        <f:selectItem itemLabel="Selecciona un equipo" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.selecciones}" var="seleccion"
+                                       itemLabel="#{seleccion.nombre}" itemValue="#{seleccion.id}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Selección visitante:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.visitanteId}">
+                        <f:selectItem itemLabel="Selecciona un equipo" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{partidosBean.selecciones}" var="seleccion"
+                                       itemLabel="#{seleccion.nombre}" itemValue="#{seleccion.id}" />
+                    </p:selectOneMenu>
+
+                    <h:outputText value="Fecha y hora:" styleClass="etiqueta-campo" />
+                    <p:datePicker value="#{partidosBean.partidoEnEdicion.fechaPartido}"
+                                  pattern="dd/MM/yyyy HH:mm" showTime="true" hourFormat="24" />
+
+                    <h:outputText value="Estado:" styleClass="etiqueta-campo" />
+                    <p:selectOneMenu value="#{partidosBean.partidoEnEdicion.estado}"
+                                     disabled="#{partidosBean.partidoEnEdicion.estado eq 'FINALIZADO'}">
+                        <f:selectItems value="#{partidosBean.estadosDisponibles}" />
+                    </p:selectOneMenu>
+                </h:panelGrid>
+
+                <div class="acciones-dialogo">
+                    <p:commandButton value="Guardar partido" action="#{partidosBean.guardarPartido}"
+                                     update=":formPartidos:tablaPartidos"
+                                     oncomplete="if (#{partidosBean.guardadoExitoso}) { PF('dlgPartido').hide(); }"
+                                     styleClass="boton-principal" />
+                </div>
+            </p:dialog>
+
+            <!-- Dialogo para registrar el resultado oficial (RF11, CP09, CP10) -->
+            <p:dialog id="dialogResultado" header="Registrar resultado oficial" widgetVar="dlgResultado"
+                      modal="true" width="380" responsive="true" styleClass="dialogo-resultado">
+                <h:panelGrid columns="2" rendered="#{partidosBean.partidoSeleccionado != null}"
+                             styleClass="formulario-dialogo">
+                    <h:outputText value="Partido:" styleClass="etiqueta-campo" />
+                    <h:outputText value="#{partidosBean.partidoSeleccionado.localNombre} vs #{partidosBean.partidoSeleccionado.visitanteNombre}"
+                                  styleClass="partido-seleccionado" />
+
+                    <h:outputText value="Goles local:" styleClass="etiqueta-campo" />
+                    <p:inputNumber value="#{partidosBean.golesLocalIngresados}" decimalPlaces="0" minValue="0"
+                                   inputStyleClass="campo-marcador" />
+
+                    <h:outputText value="Goles visitante:" styleClass="etiqueta-campo" />
+                    <p:inputNumber value="#{partidosBean.golesVisitanteIngresados}" decimalPlaces="0" minValue="0"
+                                   inputStyleClass="campo-marcador" />
+                </h:panelGrid>
+
+                <div class="acciones-dialogo">
+                    <p:commandButton value="Guardar resultado" action="#{partidosBean.guardarResultado}"
+                                     update=":formPartidos" oncomplete="PF('dlgResultado').hide()"
+                                     styleClass="boton-principal" />
+                </div>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

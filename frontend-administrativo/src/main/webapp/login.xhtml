@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>GolUTN Admin - Acceso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <h:outputStylesheet library="css" name="estilos.css" />
+</h:head>
+
+<h:body styleClass="pagina-login">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-identidad" aria-hidden="true">
+                <span class="balon-academico"></span>
+                <span>GolUTN</span>
+                <span class="badge-admin">ADMIN</span>
+            </div>
+            <h1>Panel Administrativo</h1>
+            <p class="login-edicion">Mundial 2026</p>
+            <p class="subtitulo">Acceso seguro para el equipo de administración</p>
+
+            <h:form id="formLogin">
+                <p:messages showDetail="true" closable="true" />
+
+                <p:outputLabel for="username" value="Usuario" />
+                <p:inputText id="username" value="#{loginFormBean.username}"
+                             placeholder="Usuario" required="true"
+                             requiredMessage="Ingresa tu usuario" autocomplete="username" />
+
+                <p:outputLabel for="password" value="Contraseña" />
+                <p:password id="password" value="#{loginFormBean.password}"
+                            placeholder="Contraseña" feedback="false"
+                            required="true" requiredMessage="Ingresa tu contraseña"
+                            autocomplete="current-password" />
+
+                <p:commandButton value="Ingresar al panel" action="#{loginFormBean.iniciarSesion}"
+                                 ajax="false" styleClass="boton-principal" />
+
+                <p class="login-demo">
+                    Ingresa con el username asignado por el administrador.
+                </p>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>

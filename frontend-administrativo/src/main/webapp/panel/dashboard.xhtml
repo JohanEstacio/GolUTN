@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/layout.xhtml">
+
+    <ui:param name="titulo" value="Inicio" />
+    <ui:param name="seccion" value="inicio" />
+
+    <ui:define name="contenido">
+        <header class="encabezado-pagina">
+            <div>
+                <span class="sobretitulo">Vista general</span>
+                <h1>Bienvenido, #{loginBean.usuarioActual.nombre}</h1>
+                <p>Supervisa y gestiona la operación administrativa del Mundial 2026.</p>
+            </div>
+            <span class="insignia-edicion">Edición 2026</span>
+        </header>
+
+        <div class="tarjetas-resumen">
+            <div class="tarjeta tarjeta-azul">
+                <span class="tarjeta-icono icono-partidos" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">#{dashboardBean.totalPartidos != null ? dashboardBean.totalPartidos : '—'}</div>
+                    <div class="etiqueta">Partidos en el calendario</div>
+                </div>
+            </div>
+            <div class="tarjeta tarjeta-dorada">
+                <span class="tarjeta-icono icono-selecciones" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">#{dashboardBean.totalSelecciones != null ? dashboardBean.totalSelecciones : '—'}</div>
+                    <div class="etiqueta">Selecciones</div>
+                </div>
+            </div>
+            <div class="tarjeta tarjeta-verde">
+                <span class="tarjeta-icono icono-grupos" aria-hidden="true"></span>
+                <div class="tarjeta-datos">
+                    <div class="valor">#{dashboardBean.totalGrupos != null ? dashboardBean.totalGrupos : '—'}</div>
+                    <div class="etiqueta">Grupos</div>
+                </div>
+            </div>
+        </div>
+
+        <p:panel header="Accesos rápidos" styleClass="panel-seccion panel-accesos">
+            <div class="accesos-rapidos">
+                <h:link outcome="/panel/partidos" styleClass="acceso acceso-partidos">
+                    <span class="acceso-icono" aria-hidden="true"></span>
+                    <span><strong>Gestionar partidos</strong><small>Calendario y resultados oficiales</small></span>
+                </h:link>
+                <h:link outcome="/panel/usuarios" styleClass="acceso acceso-usuarios">
+                    <span class="acceso-icono" aria-hidden="true"></span>
+                    <span><strong>Gestionar usuarios</strong><small>Cuentas, roles y estados</small></span>
+                </h:link>
+                <h:link outcome="/panel/reportes" styleClass="acceso acceso-reportes">
+                    <span class="acceso-icono" aria-hidden="true"></span>
+                    <span><strong>Consultar reportes</strong><small>Indicadores y auditoría</small></span>
+                </h:link>
+            </div>
+        </p:panel>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,59 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>GolUTN Admin - #{titulo}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <h:outputStylesheet library="css" name="estilos.css" />
+    </h:head>
+
+    <h:body styleClass="pagina-panel">
+        <div class="panel-topbar">
+            <div class="marca">
+                <span class="balon-academico" aria-hidden="true"></span>
+                <span class="marca-nombre">GolUTN</span>
+                <span class="badge-admin">ADMIN</span>
+            </div>
+            <h:form styleClass="sesion-usuario">
+                <span class="avatar-usuario" aria-hidden="true">A</span>
+                <span class="datos-usuario">
+                    <span class="nombre-usuario">#{loginBean.usuarioActual.nombre}</span>
+                    <span class="rol-usuario">Administrador</span>
+                </span>
+                <h:commandLink value="Cerrar sesión" action="#{loginBean.cerrarSesion}"
+                               styleClass="cerrar-sesion" title="Cerrar sesión administrativa" />
+            </h:form>
+        </div>
+
+        <div class="panel-body">
+            <nav class="panel-menu" aria-label="Navegación principal">
+                <div class="menu-encabezado">Gestión del torneo</div>
+                <h:link outcome="/panel/dashboard" value="Inicio"
+                        styleClass="menu-inicio #{seccion eq 'inicio' ? 'activo' : ''}" />
+                <h:link outcome="/panel/partidos" value="Gestión de partidos"
+                        styleClass="menu-partidos #{seccion eq 'partidos' ? 'activo' : ''}" />
+                <h:link outcome="/panel/selecciones" value="Selecciones"
+                        styleClass="menu-selecciones #{seccion eq 'selecciones' ? 'activo' : ''}" />
+                <h:link outcome="/panel/usuarios" value="Gestión de usuarios"
+                        styleClass="menu-usuarios #{seccion eq 'usuarios' ? 'activo' : ''}" />
+                <h:link outcome="/panel/reportes" value="Reportes y auditoría"
+                        styleClass="menu-reportes #{seccion eq 'reportes' ? 'activo' : ''}" />
+                <h:link outcome="/panel/auditoria" value="Auditoría"
+                        styleClass="menu-auditoria #{seccion eq 'auditoria' ? 'activo' : ''}" />
+                <h:link outcome="/panel/simulacion" value="Bono anti-bancarrota"
+                        styleClass="menu-simulacion #{seccion eq 'simulacion' ? 'activo' : ''}" />
+                <div class="menu-pie">
+                    <span class="indicador-sistema"></span>
+                    Sistema administrativo
+                </div>
+            </nav>
+
+            <main class="panel-contenido">
+                <h:messages globalOnly="false" showDetail="true" showSummary="true" styleClass="mensajes-globales" />
+                <ui:insert name="contenido">Contenido no definido</ui:insert>
+            </main>
+        </div>
+    </h:body>
+</ui:composition>

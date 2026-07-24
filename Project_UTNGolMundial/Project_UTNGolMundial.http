@@ -1,6 +1,0 @@
-@Project_UTNGolMundial_HostAddress = http://localhost:5138
-
-GET {{Project_UTNGolMundial_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
