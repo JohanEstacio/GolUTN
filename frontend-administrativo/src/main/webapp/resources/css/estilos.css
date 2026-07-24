@@ -984,6 +984,16 @@ textarea:focus-visible,
     padding: 16px 16px 0;
 }
 
+.acciones-actualizar {
+    align-items: center;
+    gap: 16px;
+}
+
+.ultima-actualizacion {
+    font-size: 0.85rem;
+    color: var(--gol-texto-suave);
+}
+
 .tabla-administrativa.ui-datatable {
     border: 0;
 }

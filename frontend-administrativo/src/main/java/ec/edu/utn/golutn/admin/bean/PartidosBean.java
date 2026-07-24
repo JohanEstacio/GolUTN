@@ -172,7 +172,7 @@ public class PartidosBean implements Serializable {
                               : "El partido se agregó al calendario correctamente."));
             cargarPartidos();
         } else {
-            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
                     "No se pudo guardar", mensajeError(resultado)));
         }
     }

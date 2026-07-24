@@ -18,6 +18,19 @@
         </header>
 
         <h:form id="formAuditoria" styleClass="contenedor-tabla">
+            <div class="acciones-tabla acciones-actualizar">
+                <h:panelGroup id="ultimaActualizacion" layout="block" styleClass="ultima-actualizacion">
+                    Última actualización:
+                    <h:outputText value="#{auditoriaBean.ultimaActualizacion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" type="localDateTime" />
+                    </h:outputText>
+                </h:panelGroup>
+                <p:commandButton value="Actualizar" icon="pi pi-refresh"
+                                 actionListener="#{auditoriaBean.recargar}"
+                                 update=":formAuditoria:tablaAuditoria :formAuditoria:ultimaActualizacion"
+                                 styleClass="boton-principal" />
+            </div>
+
             <p:dataTable id="tablaAuditoria" var="a" value="#{auditoriaBean.auditorias}"
                          emptyMessage="No hay registros de auditoría disponibles en este momento."
                          paginator="true" rows="10" reflow="true"

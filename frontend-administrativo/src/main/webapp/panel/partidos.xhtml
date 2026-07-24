@@ -72,7 +72,7 @@
             <!-- Dialogo para crear o editar un partido (RF10, RNF10) -->
             <p:dialog id="dialogPartido" header="#{partidosBean.editando ? 'Editar partido' : 'Nuevo partido'}"
                       widgetVar="dlgPartido" modal="true" width="460" responsive="true" styleClass="dialogo-partido">
-                <p:messages id="mensajesPartido" showDetail="true" closable="true" />
+                <p:messages id="mensajesPartido" showDetail="true" closable="true" autoUpdate="true" globalOnly="false" />
 
                 <h:panelGrid columns="2" rendered="#{partidosBean.partidoEnEdicion != null}"
                              styleClass="formulario-dialogo">
@@ -128,7 +128,7 @@
 
                 <div class="acciones-dialogo">
                     <p:commandButton value="Guardar partido" action="#{partidosBean.guardarPartido}"
-                                     update=":formPartidos"
+                                     update=":formPartidos:tablaPartidos"
                                      oncomplete="if (#{partidosBean.guardadoExitoso}) { PF('dlgPartido').hide(); }"
                                      styleClass="boton-principal" />
                 </div>

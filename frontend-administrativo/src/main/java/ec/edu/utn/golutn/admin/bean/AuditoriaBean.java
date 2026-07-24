@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,10 +28,16 @@ public class AuditoriaBean implements Serializable {
 
     private List<Auditoria> auditorias;
     private Auditoria auditoriaSeleccionada;
+    private LocalDateTime ultimaActualizacion;
 
     @PostConstruct
     public void init() {
+        recargar();
+    }
+
+    public void recargar() {
         cargarAuditorias();
+        this.ultimaActualizacion = LocalDateTime.now();
     }
 
     public void cargarAuditorias() {
@@ -64,4 +71,6 @@ public class AuditoriaBean implements Serializable {
     public List<Auditoria> getAuditorias() { return auditorias; }
 
     public Auditoria getAuditoriaSeleccionada() { return auditoriaSeleccionada; }
+
+    public LocalDateTime getUltimaActualizacion() { return ultimaActualizacion; }
 }
